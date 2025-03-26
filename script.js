@@ -105,4 +105,128 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Testimonial Carousel
+    const testimonialCarousel = document.getElementById('testimonialCarousel');
+    if (testimonialCarousel) {
+        const slides = testimonialCarousel.querySelectorAll('.testimonial-slide');
+        const prevBtn = document.getElementById('prevTestimonial');
+        const nextBtn = document.getElementById('nextTestimonial');
+        const dots = testimonialCarousel.querySelectorAll('.indicator-dot');
+        let currentIndex = 0;
+        
+        // Function to update the active slide
+        function showSlide(index) {
+            // Hide all slides
+            slides.forEach(slide => {
+                slide.classList.add('hidden');
+                slide.classList.remove('active');
+            });
+            
+            // Update indicator dots
+            dots.forEach(dot => {
+                dot.classList.remove('bg-[#3E9656]');
+                dot.classList.add('bg-[#3E9656]/30');
+            });
+            
+            // Show the active slide
+            slides[index].classList.remove('hidden');
+            slides[index].classList.add('active');
+            
+            // Update the active dot
+            dots[index].classList.remove('bg-[#3E9656]/30');
+            dots[index].classList.add('bg-[#3E9656]');
+            
+            // Update current index
+            currentIndex = index;
+        }
+        
+        // Previous button click
+        if (prevBtn) {
+            prevBtn.addEventListener('click', function() {
+                let newIndex = currentIndex - 1;
+                if (newIndex < 0) {
+                    newIndex = slides.length - 1;
+                }
+                showSlide(newIndex);
+            });
+        }
+        
+        // Next button click
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function() {
+                let newIndex = currentIndex + 1;
+                if (newIndex >= slides.length) {
+                    newIndex = 0;
+                }
+                showSlide(newIndex);
+            });
+        }
+        
+        // Indicator dot clicks
+        dots.forEach((dot, index) => {
+            dot.addEventListener('click', function() {
+                showSlide(index);
+            });
+        });
+        
+        // Swipe functionality for touch devices
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        testimonialCarousel.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        
+        testimonialCarousel.addEventListener('touchend', function(e) {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, { passive: true });
+        
+        function handleSwipe() {
+            const swipeThreshold = 50; // Minimum distance for a swipe
+            
+            if (touchEndX < touchStartX - swipeThreshold) {
+                // Swipe left - show next slide
+                let newIndex = currentIndex + 1;
+                if (newIndex >= slides.length) {
+                    newIndex = 0;
+                }
+                showSlide(newIndex);
+            }
+            
+            if (touchEndX > touchStartX + swipeThreshold) {
+                // Swipe right - show previous slide
+                let newIndex = currentIndex - 1;
+                if (newIndex < 0) {
+                    newIndex = slides.length - 1;
+                }
+                showSlide(newIndex);
+            }
+        }
+        
+        // Auto-advance the carousel every 6 seconds
+        let autoAdvance = setInterval(function() {
+            let newIndex = currentIndex + 1;
+            if (newIndex >= slides.length) {
+                newIndex = 0;
+            }
+            showSlide(newIndex);
+        }, 6000);
+        
+        // Pause auto-advance when cursor is over the carousel
+        testimonialCarousel.addEventListener('mouseenter', function() {
+            clearInterval(autoAdvance);
+        });
+        
+        // Resume auto-advance when cursor leaves the carousel
+        testimonialCarousel.addEventListener('mouseleave', function() {
+            autoAdvance = setInterval(function() {
+                let newIndex = currentIndex + 1;
+                if (newIndex >= slides.length) {
+                    newIndex = 0;
+                }
+                showSlide(newIndex);
+            }, 6000);
+        });
+    }
 });

@@ -25,6 +25,39 @@
         .primary-gradient {
             background-image: linear-gradient(to right, var(--primary-dark), var(--primary-color), var(--primary-light));
         }
+
+        /* Testimonial Carousel Styles */
+        .testimonial-slide {
+            opacity: 1;
+            transition: opacity 0.4s ease-in-out;
+        }
+        
+        .testimonial-slide.hidden {
+            opacity: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+        }
+        
+        .testimonial-slide.active {
+            opacity: 1;
+            position: relative;
+        }
+        
+        #prevTestimonial, #nextTestimonial {
+            opacity: 0.7;
+            transition: opacity 0.3s, background-color 0.3s;
+        }
+        
+        #prevTestimonial:hover, #nextTestimonial:hover {
+            opacity: 1;
+        }
+        
+        .indicator-dot {
+            transition: background-color 0.3s ease;
+        }
     </style>
 </head>
 <body class="overflow-x-hidden">
@@ -67,21 +100,80 @@
     </nav>
 
     <!-- Home Section -->
-    <div id="home" class="w-11/12 max-w-3xl text-center mx-auto h-screen flex flex-col justify-center items-center gap-5">
+    <div id="home" class="w-11/12 max-w-3xl text-center mx-auto h-screen flex flex-col justify-center items-center gap-5 relative overflow-hidden">
+        <!-- Decorative Elements - Top Left -->
+        <div class="absolute top-[10%] left-[5%] w-20 h-20 rounded-full bg-[#3E9656]/5 animate-pulse"></div>
+        <div class="absolute top-[15%] left-[10%] w-4 h-4 rounded-full bg-[#3E9656]/20"></div>
+        <div class="absolute top-[20%] left-[15%] w-8 h-8 border-2 border-[#3E9656]/10 rounded-md transform rotate-45"></div>
+        
+        <!-- Decorative Elements - Top Right -->
+        <div class="absolute top-[12%] right-[8%] w-12 h-12 border-2 border-dashed border-[#3E9656]/20 rounded-full"></div>
+        <div class="absolute top-[18%] right-[15%] w-6 h-6 bg-[#3E9656]/10 rounded-md transform rotate-12"></div>
+        <div class="absolute top-[25%] right-[10%]">
+            <svg class="w-5 h-5 text-[#3E9656]/30" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/>
+            </svg>
+        </div>
+        
+        <!-- Decorative Elements - Bottom Left -->
+        <div class="absolute bottom-[18%] left-[12%]">
+            <svg class="w-8 h-8 text-[#3E9656]/20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path d="M418.4 157.9c35.3-8.3 61.6-40 61.6-77.9c0-44.2-35.8-80-80-80c-43.4 0-78.7 34.5-80 77.5L136.2 151.1C121.7 136.8 101.9 128 80 128c-44.2 0-80 35.8-80 80s35.8 80 80 80c12.2 0 23.8-2.7 34.1-7.6L259.7 407.8c-2.4 7.6-3.7 15.8-3.7 24.2c0 44.2 35.8 80 80 80s80-35.8 80-80c0-27.7-14-52.1-35.2-66.4l37.5-148zM156.3 232.2c2.2-6.9 3.5-14.2 3.7-21.7l184.2-73.7c12.5 12.9 29.1 22.1 47.8 25.9L356.4 310c-11.3-5.1-23.7-7.9-36.4-7.9c-32.3 0-60.2 19.1-72.9 46.7L156.3 232.2z"/>
+            </svg>
+        </div>
+        <div class="absolute bottom-[25%] left-[20%] w-3 h-3 bg-[#3E9656]/30 rounded-full"></div>
+        <div class="absolute bottom-[15%] left-[8%] w-6 h-6 border-2 border-[#3E9656]/10 rounded-full"></div>
+        
+        <!-- Decorative Elements - Bottom Right -->
+        <div class="absolute bottom-[20%] right-[15%] w-10 h-10 bg-[#3E9656]/5 rounded-full"></div>
+        <div class="absolute bottom-[12%] right-[10%] w-4 h-12 bg-[#3E9656]/10 rounded-full transform rotate-45"></div>
+        <div class="absolute bottom-[28%] right-[18%]">
+            <svg class="w-6 h-6 text-[#3E9656]/20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                <path d="M64 256c0 88.4 71.6 160 160 160c28.9 0 56-7.7 79.4-21.1l-72-86.4c-11.3-13.6-9.5-33.8 4.1-45.1s33.8-9.5 45.1 4.1l72 86.4c13.4-23.4 21.1-50.5 21.1-79.4c0-88.4-71.6-160-160-160S64 167.6 64 256zM344.9 344.9c-22.7 22.7-53.5 36.5-88.4 36.5c-92.5 0-167.4-75-167.4-167.4c0-92.5 75-167.4 167.4-167.4c92.5 0 167.4 75 167.4 167.4c0 34.9-13.8 65.7-36.5 88.4l95.5 95.5c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-95.5-95.5-92.3 92.3L391 439.8l-46.1-46.1z"/>
+            </svg>
+        </div>
+        
+        <!-- Floating Data Points (Scattered across the section) -->
+        <div class="absolute top-[45%] left-[5%] w-1.5 h-1.5 bg-[#3E9656]/40 rounded-full"></div>
+        <div class="absolute top-[38%] left-[22%] w-2 h-2 bg-[#3E9656]/30 rounded-full"></div>
+        <div class="absolute top-[60%] left-[18%] w-1 h-1 bg-[#3E9656]/50 rounded-full"></div>
+        <div class="absolute top-[35%] right-[25%] w-1.5 h-1.5 bg-[#3E9656]/40 rounded-full"></div>
+        <div class="absolute top-[55%] right-[10%] w-2 h-2 bg-[#3E9656]/30 rounded-full"></div>
+        <div class="absolute top-[65%] right-[22%] w-1 h-1 bg-[#3E9656]/50 rounded-full"></div>
+        
+        <!-- Subtle Connection Lines -->
+        <div class="absolute top-[40%] left-[7%] w-20 h-0.5 bg-[#3E9656]/10 transform rotate-45"></div>
+        <div class="absolute top-[50%] right-[7%] w-16 h-0.5 bg-[#3E9656]/10 transform -rotate-30"></div>
+        
+        <!-- Main Content (Original) -->
         <h1 class="text-3xl sm:text-6xl lg:text-[66px] relative">
             <span class="text-[#3E9656] font-bold">Data</span> Assisted <span class="text-[#3E9656] font-bold">Intelligence</span>
             <div class="absolute w-20 h-1 bg-[#3E9656] bottom-0 left-1/2 transform -translate-x-1/2 rounded-full"></div>
         </h1>
-        <p class="max-w-xl mx-auto text-gray-700">
-            Don't just collect data—weaponize it. DAI transforms raw information into strategic firepower
-            that revolutionizes how you work, compete, and <span class="text-[#3E9656] font-semibold">win</span>.
+        <p class="max-w-xl mx-auto text-gray-700 relative z-10">
+            Build anything with your data. DAI dives deep into your unique workflow,
+            collaboratively uncovering hidden efficiency opportunities that transform
+            your <span class="text-[#3E9656] font-semibold">raw data</span> into precision-engineered solutions—whether you're a growing
+            business or an individual looking to <span class="text-[#3E9656] font-semibold">supercharge your productivity</span>.
         </p>
-        <div>
+        <div class="relative z-10">
             <a href="#contact" class="px-10 py-3 rounded-full bg-gradient-to-r from-[#2d7040] via-[#3E9656] to-[#4fad69]
             text-white flex items-center gap-2 hover:shadow-lg hover:shadow-[#3E9656]/30 transition-shadow"> 
                 Find out how <img src="images/right-arrow.png" alt="" class="w-4">
             </a>
-        </div> 
+        </div>
+        
+        <!-- Additional data-themed decorative elements -->
+        <div class="absolute bottom-[40%] left-[3%] opacity-20">
+            <svg class="w-20 h-20 text-[#3E9656]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
+            </svg>
+        </div>
+        <div class="absolute bottom-[35%] right-[3%] opacity-20">
+            <svg class="w-24 h-24 text-[#3E9656]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
+            </svg>
+        </div>
     </div>
 
     <!-- About Us Section -->
@@ -93,12 +185,8 @@
                     <div class="w-full max-w-md h-80 bg-[#e0f0e4] rounded-lg flex items-center justify-center border-2 border-[#3E9656]/30">
                         <!-- Replace this with your actual image -->
                         <div class="text-center p-4">
-                            <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-[#3E9656] flex items-center justify-center">
-                                <span class="text-white text-3xl">DAI</span>
-                            </div>
-                            <p class="text-[#3E9656]">
-                                [PLACEHOLDER: Team image or data visualization graphic showing collaboration]
-                            </p>
+                            <!-- Replacing placeholder with actual image -->
+                            <img src="images/team.webp" alt="DAI Team" class="w-full h-auto rounded-lg object-cover">
                         </div>
                     </div>
                 </div>
@@ -213,14 +301,9 @@
                     </div>
                     <h3 class="text-xl font-bold text-[#2d7040] mb-4">Custom AI Solutions</h3>
                     <p class="text-gray-600 mb-6">
-                        We design, develop, and deploy AI systems tailored to your specific industry challenges. From predictive analytics to computer vision, our solutions integrate seamlessly with your existing infrastructure.
+                        We design, develop, and deploy AI systems tailored to your specific industry challenges. From predictive analytics to processing natural language, our solutions integrate seamlessly with your existing infrastructure.
                     </p>
-                    <a href="#" class="inline-flex items-center text-[#3E9656] font-medium hover:underline">
-                        Learn more 
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+                    
                 </div>
 
                 <!-- Service Card 2 -->
@@ -235,12 +318,7 @@
                     <p class="text-gray-600 mb-6">
                         Our ELT (Extract, Load, Transform) processes ensure your data is clean, accessible, and ready for analysis. We build robust pipelines that scale with your needs and create single sources of truth for your organization.
                     </p>
-                    <a href="#" class="inline-flex items-center text-[#3E9656] font-medium hover:underline">
-                        Learn more 
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+                    
                 </div>
 
                 <!-- Service Card 3 -->
@@ -255,12 +333,7 @@
                     <p class="text-gray-600 mb-6">
                         Identify bottlenecks and inefficiencies in your operations, then eliminate them with intelligent automation. Our solutions reduce human error, free up valuable time, and increase overall productivity.
                     </p>
-                    <a href="#" class="inline-flex items-center text-[#3E9656] font-medium hover:underline">
-                        Learn more 
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+                    
                 </div>
             </div>
 
@@ -278,12 +351,7 @@
                     <p class="text-gray-600 mb-6">
                         Stop wasting time on repetitive tasks. Our custom AI agents can handle email management, research, data entry, scheduling, and more—giving you back hours in your day.
                     </p>
-                    <a href="#" class="inline-flex items-center text-[#3E9656] font-medium hover:underline">
-                        Learn more 
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
+                    
                 </div>
 
                 <!-- Individual Service Card 2 -->
@@ -298,12 +366,14 @@
                     <p class="text-gray-600 mb-6">
                         Accelerate your academic journey with AI tools that help organize research, generate study materials, provide feedback on assignments, and streamline your learning process.
                     </p>
+                    <!-- Commented out Learn more link
                     <a href="#" class="inline-flex items-center text-[#3E9656] font-medium hover:underline">
                         Learn more 
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
                         </svg>
                     </a>
+                    -->
                 </div>
             </div>
         </div>
@@ -587,14 +657,7 @@
                             <div class="w-full md:w-1/3 flex items-center justify-center">
                                 <div class="w-full h-80 bg-[#e0f0e4] rounded-lg flex items-center justify-center border border-[#3E9656]/20">
                                     <div class="text-center p-4">
-                                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#3E9656]/20 flex items-center justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                                            </svg>
-                                        </div>
-                                        <p class="text-[#3E9656] text-sm">
-                                            [PLACEHOLDER: Dashboard visualization or infographic showing the data integration solution]
-                                        </p>
+                                        <img src="images/marketeam.png" alt="Marketing Team Data Dashboard" class="w-full h-auto rounded-lg object-cover">
                                     </div>
                                 </div>
                             </div>
@@ -701,7 +764,7 @@
                                             </svg>
                                         </div>
                                         <p class="text-[#3E9656] text-sm">
-                                            [PLACEHOLDER: Visualization of the AI research assistant analyzing papers and extracting insights]
+                                            [PLACEHOLDER]
                                         </p>
                                     </div>
                                 </div>
@@ -721,64 +784,335 @@
                 <h2 class="text-4xl font-bold text-gray-800 mb-4">Our Clients</h2>
                 <div class="w-20 h-1 bg-[#3E9656] mx-auto"></div>
                 <p class="mt-6 max-w-2xl mx-auto text-gray-600">
-                    Trusted by leading organizations and educational institutions
+                    Trusted by organizations and educational institutions
                 </p>
             </div>
 
             <!-- Client Logos - Single Row -->
             <div class="py-8">
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center max-w-4xl mx-auto">
-                    <!-- Client Logo Placeholders -->
+                    <!-- Client Logo 1 -->
                     <div class="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center h-32 border border-gray-100 hover:shadow-md transition-shadow hover:border-[#3E9656]/30">
-                        <div class="w-full h-full bg-gray-100 rounded flex items-center justify-center">
-                            <span class="text-gray-500 font-medium text-center px-2">[LOGO: Client 1]</span>
-                        </div>
+                        <img src="images/company1.png" alt="Client 1" class="max-h-full max-w-full object-contain">
                     </div>
                     
+                    <!-- Client Logo 2 -->
                     <div class="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center h-32 border border-gray-100 hover:shadow-md transition-shadow hover:border-[#3E9656]/30">
-                        <div class="w-full h-full bg-gray-100 rounded flex items-center justify-center">
-                            <span class="text-gray-500 font-medium text-center px-2">[LOGO: Client 2]</span>
-                        </div>
+                        <img src="images/company2.png" alt="Client 2" class="max-h-full max-w-full object-contain">
                     </div>
                     
+                    <!-- Client Logo 3 -->
                     <div class="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center h-32 border border-gray-100 hover:shadow-md transition-shadow hover:border-[#3E9656]/30">
-                        <div class="w-full h-full bg-gray-100 rounded flex items-center justify-center">
-                            <span class="text-gray-500 font-medium text-center px-2">[LOGO: University]</span>
-                        </div>
+                        <img src="images/company3.png" alt="Client 3" class="max-h-full max-w-full object-contain">
                     </div>
                     
+                    <!-- Client Logo 4 -->
                     <div class="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center h-32 border border-gray-100 hover:shadow-md transition-shadow hover:border-[#3E9656]/30">
-                        <div class="w-full h-full bg-gray-100 rounded flex items-center justify-center">
-                            <span class="text-gray-500 font-medium text-center px-2">[LOGO: Research Inst.]</span>
-                        </div>
+                        <img src="images/company4.png" alt="Client 4" class="max-h-full max-w-full object-contain">
                     </div>
                 </div>
             </div>
             
             <!-- Client Testimonial -->
-            <div class="mt-16 bg-white rounded-xl shadow-md p-8 md:p-10 max-w-4xl mx-auto border border-[#3E9656]/10">
-                <div class="flex flex-col items-center text-center">
-                    <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                        </svg>
-                    </div>
-                    
-                    <blockquote class="text-xl md:text-2xl text-gray-700 italic mb-6">
-                        "DAI transformed our approach to data analysis. Their team not only delivered a solution that met our technical needs but also empowered our staff to make better, faster decisions."
-                    </blockquote>
-                    
-                    <div class="flex items-center flex-col">
-                        <div class="w-12 h-12 bg-[#e0f0e4] rounded-full flex items-center justify-center mb-2">
-                            <span class="text-[#3E9656] font-bold">JD</span>
+            <div class="mt-16 bg-white rounded-xl shadow-md p-8 md:p-10 max-w-4xl mx-auto border border-[#3E9656]/10 relative">
+                <!-- Testimonial Carousel Container -->
+                <div id="testimonialCarousel" class="relative">
+                    <!-- Testimonial Slides -->
+                    <div class="testimonial-slides overflow-hidden">
+                        <!-- Testimonial 1 - Ventpods -->
+                        <div class="testimonial-slide active">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                    </svg>
+                                </div>
+                                
+                                <blockquote class="text-xl md:text-2xl text-gray-700 italic mb-6">
+                                    "DAI's expertise in AI and data engineering was crucial for Ventpods. They helped us build a sophisticated therapist chatbot and recommendation system that ensures users find the most relevant mental health support. Their solution has significantly improved user engagement and satisfaction."
+                                </blockquote>
+                                
+                                <div class="flex items-center flex-col">
+                                    <div class="w-12 h-12 bg-[#e0f0e4] rounded-full flex items-center justify-center mb-2">
+                                        <span class="text-[#3E9656] font-bold">ET</span>
+                                    </div>
+                                    <div class="text-gray-900 font-medium">Eze T</div>
+                                    <div class="text-gray-500 text-sm">Chief Technical Officer, Ventpods</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="text-gray-900 font-medium">Jane Doe</div>
-                        <div class="text-gray-500 text-sm">Chief Data Officer, [Company Name]</div>
+
+                        <!-- Testimonial 2 -->
+                        <div class="testimonial-slide hidden">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                    </svg>
+                                </div>
+                                
+                                <blockquote class="text-xl md:text-2xl text-gray-700 italic mb-6">
+                                    "Working with DAI transformed our academic research capabilities. Their custom AI solution helped us analyze thousands of scientific papers, cutting our research time by more than half while actually improving the comprehensiveness of our literature review."
+                                </blockquote>
+                                
+                                <div class="flex items-center flex-col">
+                                    <div class="w-12 h-12 bg-[#e0f0e4] rounded-full flex items-center justify-center mb-2">
+                                        <span class="text-[#3E9656] font-bold">SK</span>
+                                    </div>
+                                    <div class="text-gray-900 font-medium">Dr. Sarah K.</div>
+                                    <div class="text-gray-500 text-sm">Research Director, Cambridge University</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial 3 -->
+                        <div class="testimonial-slide hidden">
+                            <div class="flex flex-col items-center text-center">
+                                <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                    </svg>
+                                </div>
+                                
+                                <blockquote class="text-xl md:text-2xl text-gray-700 italic mb-6">
+                                    "DAI helped us automate our entire reporting workflow. What used to take our team three days each month now happens automatically in minutes. The insights provided by their custom dashboard have helped us identify new revenue opportunities we were completely missing before."
+                                </blockquote>
+                                
+                                <div class="flex items-center flex-col">
+                                    <div class="w-12 h-12 bg-[#e0f0e4] rounded-full flex items-center justify-center mb-2">
+                                        <span class="text-[#3E9656] font-bold">MJ</span>
+                                    </div>
+                                    <div class="text-gray-900 font-medium">Michael J.</div>
+                                    <div class="text-gray-500 text-sm">Operations Manager, GreenTech Solutions</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Arrows -->
+                    <button class="absolute top-1/2 -left-4 transform -translate-y-1/2 bg-white hover:bg-[#3E9656]/10 rounded-full p-2 shadow-md focus:outline-none transition-colors z-10" id="prevTestimonial">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                        </svg>
+                    </button>
+                    
+                    <button class="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-white hover:bg-[#3E9656]/10 rounded-full p-2 shadow-md focus:outline-none transition-colors z-10" id="nextTestimonial">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </button>
+
+                    <!-- Indicator Dots -->
+                    <div class="flex justify-center mt-8 space-x-2">
+                        <button class="w-3 h-3 rounded-full bg-[#3E9656] indicator-dot active" data-index="0"></button>
+                        <button class="w-3 h-3 rounded-full bg-[#3E9656]/30 indicator-dot" data-index="1"></button>
+                        <button class="w-3 h-3 rounded-full bg-[#3E9656]/30 indicator-dot" data-index="2"></button>
                     </div>
                 </div>
             </div>
         </div>
     </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-24 bg-white">
+        <div class="container mx-auto px-4 md:px-8 lg:px-16">
+            <!-- Section Header -->
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-800 mb-4">Contact Us</h2>
+                <div class="w-20 h-1 bg-[#3E9656] mx-auto"></div>
+                <p class="mt-6 max-w-2xl mx-auto text-gray-600">
+                    Ready to transform your relationship with data? Let's start a conversation about how DAI can help you achieve your goals.
+                </p>
+            </div>
+
+            <!-- Contact Form Card -->
+            <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg border border-[#3E9656]/10 overflow-hidden">
+                <div class="flex flex-col md:flex-row">
+                    <!-- Contact Info -->
+                    <div class="bg-gradient-to-br from-[#3E9656] to-[#2d7040] text-white p-8 md:p-10 md:w-2/5">
+                        <h3 class="text-xl font-bold mb-6">Get in Touch</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="mr-4 mt-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-white/90 mb-1">Email</h4>
+                                    <p class="text-white/80">hello@dai-solutions.com</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="mr-4 mt-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-white/90 mb-1">Location</h4>
+                                    <p class="text-white/80">San Francisco, CA</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="mr-4 mt-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h4 class="text-sm font-semibold text-white/90 mb-1">Working Hours</h4>
+                                    <p class="text-white/80">Mon - Fri: 9AM - 5PM PST</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-10">
+                            <h4 class="text-sm font-semibold text-white/90 mb-3">Connect With Us</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="text-white hover:text-white/80 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" />
+                                    </svg>
+                                </a>
+                                <a href="#" class="text-white hover:text-white/80 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                                    </svg>
+                                </a>
+                                <a href="#" class="text-white hover:text-white/80 transition">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                                    </svg>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Form -->
+                    <div class="p-8 md:p-10 md:w-3/5">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Send Us a Message</h3>
+                        
+                        <form action="https://formsubmit.co/odendavid0@gmail.com" method="POST">
+                            <!-- Hidden input to send email to your address without exposing it -->
+                            <input type="hidden" name="_subject" value="New DAI Contact Form Submission">
+                            
+                            <div class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    <div>
+                                        <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                                        <input type="text" name="name" id="name" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3E9656]/50 focus:border-[#3E9656]">
+                                    </div>
+                                    
+                                    <div>
+                                        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                                        <input type="email" name="email" id="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3E9656]/50 focus:border-[#3E9656]">
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <label for="subject" class="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+                                    <input type="text" name="subject" id="subject" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3E9656]/50 focus:border-[#3E9656]">
+                                </div>
+                                
+                                <div>
+                                    <label for="message" class="block text-sm font-medium text-gray-700 mb-1">Message</label>
+                                    <textarea rows="5" name="message" id="message" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3E9656]/50 focus:border-[#3E9656]"></textarea>
+                                </div>
+                                
+                                <div>
+                                    <button type="submit" class="w-full py-3 px-6 rounded-md bg-gradient-to-r from-[#2d7040] via-[#3E9656] to-[#4fad69] text-white font-medium hover:shadow-lg hover:shadow-[#3E9656]/30 transition-shadow">
+                                        Send Message
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer with updated color scheme -->
+    <footer class="bg-[#f0f8f3] border-t border-[#3E9656]/20 py-12">
+        <div class="container mx-auto px-4 md:px-8 lg:px-16">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <img src="images/logo.png" alt="DAI Logo" class="w-28 mb-4">
+                    <p class="text-gray-600 max-w-xs">
+                        Transforming data into actionable intelligence for businesses and individuals.
+                    </p>
+                </div>
+                
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold text-[#2d7040] mb-4">Quick Links</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#home" class="text-gray-600 hover:text-[#3E9656] transition">Home</a></li>
+                            <li><a href="#about" class="text-gray-600 hover:text-[#3E9656] transition">About</a></li>
+                            <li><a href="#services" class="text-gray-600 hover:text-[#3E9656] transition">Services</a></li>
+                            <li><a href="#projects" class="text-gray-600 hover:text-[#3E9656] transition">Case Studies</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold text-[#2d7040] mb-4">Services</h4>
+                        <ul class="space-y-2">
+                            <li><a href="#" class="text-gray-600 hover:text-[#3E9656] transition">Custom AI Solutions</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-[#3E9656] transition">Data Engineering</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-[#3E9656] transition">Workflow Automation</a></li>
+                            <li><a href="#" class="text-gray-600 hover:text-[#3E9656] transition">Research Assistants</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="col-span-2 md:col-span-1">
+                        <h4 class="text-lg font-semibold text-[#2d7040] mb-4">Contact</h4>
+                        <ul class="space-y-2">
+                            <li class="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                <span class="text-gray-600">hello@dai-solutions.com</span>
+                            </li>
+                            <li class="flex items-start">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                                <span class="text-gray-600">San Francisco, CA</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="border-t border-[#3E9656]/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-600">© 2023 Data Assisted Intelligence. All rights reserved.</p>
+                
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="#" class="text-[#3E9656] hover:text-[#2d7040] transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="text-[#3E9656] hover:text-[#2d7040] transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+                        </svg>
+                    </a>
+                    <a href="#" class="text-[#3E9656] hover:text-[#2d7040] transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <!-- JavaScript -->
     <script src="script.js"></script>
