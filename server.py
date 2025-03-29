@@ -8,6 +8,16 @@ from openai import OpenAI
 
 app = FastAPI()
 
+origins = ["*"]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True, 
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 client = OpenAI(
    api_key=os.getenv('OPEN_AI_API_KEY')
 )
