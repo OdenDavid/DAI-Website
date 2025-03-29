@@ -1,7 +1,15 @@
-from fastapi import FastAPI, Body, WebSocket, WebSocketDisconnect
+from fastapi import FastAPI, Body, WebSocket, WebSocketDisconnect, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import json
 import os
+import logging
+
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger("dai-chat")
 
 #2
 from openai import OpenAI
@@ -18,11 +26,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-client = OpenAI(
-   api_key=os.getenv('OPEN_AI_API_KEY')
-)
+# Initialize OpenAI client with API key from environment
+api_key = os.getenv('OPEN_AI_API_KEY')
+if not api_key:
+    logger.warning("OPEN_AI_API_KEY environment variable not set!")
 
-messages = [{"role": "system",
+client = OpenAI(api_key=api_key)
+
+# System message that defines the assistant's behavior
+system_message = {"role": "system",
              "content": """
                     You are DAI Assistant, a helpful AI representative for Data Assisted Intelligence (DAI). Your purpose is to understand visitors' business challenges or individual workflow problems, and explain how DAI's services could provide solutions.
 
@@ -77,36 +89,79 @@ messages = [{"role": "system",
                     Remember: Your goal is to have a productive conversation that helps the user understand how DAI could solve their problems, while collecting enough information for the DAI team to follow up effectively.
                     Remember that users are providing their name and email at the start of the conversation. Use their name in your responses to personalize the interaction.
              """
-             }]
+             }
 
 @app.get("/")
 def read_root():
-    return {"message": "You shouldn't be here!!!"}
+    return {"message": "WebSocket server is running. Connect to /chatComplete for chat functionality."}
 
-connected_clients = set()  # Store WebSocket connections
+# Health check endpoint
+@app.get("/health")
+def health_check():
+    if not api_key:
+        raise HTTPException(status_code=500, detail="OpenAI API key not configured")
+    return {"status": "healthy", "api_key_configured": bool(api_key)}
+
+# Store WebSocket connections
+connected_clients = set()
 
 # WebSocket route
 @app.websocket("/chatComplete") 
 async def websocket_endpoint(websocket: WebSocket):
+    logger.info("New WebSocket connection attempt")
     await websocket.accept()
+    logger.info("WebSocket connection accepted")
     connected_clients.add(websocket)
     
     try:
         while True:
+            # Wait for message from client
             data = await websocket.receive_text()
-
-            message_history = json.loads(data)
-
-            message_history.insert(0, messages[0])
-            response = client.chat.completions.create(
-                model = "gpt-4o",
-                messages = message_history,
-                
-            )
-            ChatGPT_reply = response.choices[0].message.content
+            logger.info("Received message from client")
             
-            # Broadcast the response to client  
-            await websocket.send_text(str(ChatGPT_reply))
+            try:
+                # Parse the message history
+                message_history = json.loads(data)
+                
+                # Check if this is a ping message
+                if len(message_history) == 1 and message_history[0].get("role") == "ping":
+                    logger.debug("Received ping, sending pong response")
+                    await websocket.send_text("pong")
+                    continue
+                
+                # Create a copy of the message history and insert the system message at the beginning
+                full_message_history = [system_message] + message_history
+                
+                # Log what we're sending to OpenAI (excluding system message for brevity)
+                logger.info(f"Sending to OpenAI: User message: {message_history[-1]['content'] if message_history else 'No messages'}")
+                
+                # Call OpenAI API
+                response = client.chat.completions.create(
+                    model="gpt-4o",
+                    messages=full_message_history,
+                )
+                
+                # Extract and send the assistant's reply
+                assistant_reply = response.choices[0].message.content
+                logger.info(f"Received response from OpenAI: {assistant_reply[:50]}...")  # Log first 50 chars
+                
+                # Send the response back to the client
+                await websocket.send_text(assistant_reply)
+                logger.info("Sent response to client")
+                
+            except json.JSONDecodeError:
+                logger.error("Failed to decode JSON from client")
+                await websocket.send_text("Error: Invalid message format. Please send a valid JSON array of messages.")
+            except Exception as e:
+                logger.error(f"Error processing message: {str(e)}")
+                await websocket.send_text(f"Sorry, I encountered an error while processing your message. Please try again later.")
                 
     except WebSocketDisconnect:
+        logger.info("WebSocket disconnected")
         connected_clients.remove(websocket)
+    except Exception as e:
+        logger.error(f"Unexpected WebSocket error: {str(e)}")
+        try:
+            connected_clients.remove(websocket)
+        except:
+            pass
