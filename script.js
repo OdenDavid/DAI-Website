@@ -230,3 +230,180 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+// Chat Interface Functions
+const chatInterface = document.getElementById('chatInterface');
+const userDetailsForm = document.getElementById('userDetailsForm');
+const startChatBtn = document.getElementById('startChatBtn');
+const chatMessages = document.getElementById('chatMessages');
+const chatInput = document.getElementById('chatInput');
+const sendMessageBtn = document.getElementById('sendMessageBtn');
+
+let userName = '';
+let userEmail = '';
+let socket = null;
+let messageHistory = [];
+
+// Function to initialize WebSocket connection
+function initializeWebSocket() {
+    // Create WebSocket connection - adjust the URL to your server location
+    const wsUrl = window.location.protocol === 'https:' 
+        ? 'wss://' + window.location.host + '/chatComplete'
+        : 'ws://' + window.location.host + '/chatComplete';
+    
+    // For local development, use a direct connection to your server
+    // const wsUrl = 'ws://localhost:8000/chatComplete';
+    
+    socket = new WebSocket(wsUrl);
+    
+    // Connection opened
+    socket.addEventListener('open', (event) => {
+        console.log('Connected to WebSocket server');
+    });
+    
+    // Listen for messages
+    socket.addEventListener('message', (event) => {
+        const response = event.data;
+        addMessage('ai', response);
+        
+        // Store message in history
+        messageHistory.push({
+            "role": "assistant",
+            "content": response
+        });
+        
+        // Scroll to the bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    });
+    
+    // Handle errors
+    socket.addEventListener('error', (event) => {
+        console.error('WebSocket error:', event);
+        addMessage('system', 'Connection error. Please try again later.');
+    });
+    
+    // Connection closed
+    socket.addEventListener('close', (event) => {
+        console.log('Disconnected from WebSocket server');
+        
+        if (event.wasClean) {
+            console.log(`Connection closed cleanly, code=${event.code}, reason=${event.reason}`);
+        } else {
+            console.error('Connection died');
+            addMessage('system', 'Connection lost. Please refresh the page to reconnect.');
+        }
+    });
+}
+
+// Function to add a message to the chat
+function addMessage(sender, message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'chat-message ' + sender + '-message';
+    
+    if (sender === 'user') {
+        messageDiv.innerHTML = `
+            <div class="flex items-start justify-end">
+                <div class="bg-[#3E9656]/10 p-3 rounded-lg max-w-[85%]">
+                    <p class="text-gray-700">${message}</p>
+                </div>
+                <div class="w-8 h-8 rounded-full bg-gray-300 flex items-center justify-center ml-2 flex-shrink-0">
+                    <span class="text-gray-700 text-xs font-bold">You</span>
+                </div>
+            </div>
+        `;
+    } else if (sender === 'ai') {
+        messageDiv.innerHTML = `
+            <div class="flex items-start">
+                <div class="w-8 h-8 rounded-full bg-[#3E9656] flex items-center justify-center mr-2 flex-shrink-0">
+                    <span class="text-white text-xs font-bold">AI</span>
+                </div>
+                <div class="bg-gray-100 p-3 rounded-lg max-w-[85%]">
+                    <p class="text-gray-700">${message}</p>
+                </div>
+            </div>
+        `;
+    } else if (sender === 'system') {
+        messageDiv.innerHTML = `
+            <div class="flex items-center justify-center">
+                <div class="bg-red-100 p-2 rounded-lg">
+                    <p class="text-red-600 text-sm">${message}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    chatMessages.appendChild(messageDiv);
+}
+
+// Function to send a message
+function sendMessage() {
+    const message = chatInput.value.trim();
+    
+    if (message !== '') {
+        // Add message to chat
+        addMessage('user', message);
+        
+        // Store message in history
+        messageHistory.push({
+            "role": "user",
+            "content": message
+        });
+        
+        // Clear input
+        chatInput.value = '';
+        
+        // Send message to server if socket is connected
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify(messageHistory));
+        } else {
+            addMessage('system', 'Connection is not open. Please refresh the page.');
+        }
+        
+        // Scroll to the bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+}
+
+// Check if chat elements exist and set up event listeners
+if (startChatBtn && chatInterface && userDetailsForm) {
+    // Start chat button click
+    startChatBtn.addEventListener('click', function() {
+        userName = document.getElementById('chat-name').value.trim();
+        userEmail = document.getElementById('chat-email').value.trim();
+        
+        if (userName === '' || userEmail === '') {
+            alert('Please enter your name and email to continue.');
+            return;
+        }
+        
+        // Hide user details form and show chat interface
+        userDetailsForm.style.display = 'none';
+        chatInterface.style.display = 'flex';
+        
+        // Initialize message history with user context
+        messageHistory = [
+            {
+                "role": "user",
+                "content": `Hello, my name is ${userName} and my email is ${userEmail}. I'm interested in learning about DAI's AI solutions.`
+            }
+        ];
+        
+        // Initialize WebSocket connection
+        initializeWebSocket();
+    });
+    
+    // Send message on button click
+    if (sendMessageBtn) {
+        sendMessageBtn.addEventListener('click', sendMessage);
+    }
+    
+    // Send message on Enter key
+    if (chatInput) {
+        chatInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+}
