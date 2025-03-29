@@ -262,10 +262,25 @@ function initChatInterface() {
     chatMessages = document.getElementById('chat-messages');
     connectionStatus = document.getElementById('connection-status');
     
+    // Debug DOM elements
+    console.log('Chat interface DOM elements:');
+    console.log('- userForm:', userForm);
+    console.log('- chatContainer:', chatContainer);
+    console.log('- chatInput:', chatInput);
+    console.log('- sendMessageBtn:', sendMessageBtn);
+    console.log('- chatMessages:', chatMessages);
+    console.log('- connectionStatus:', connectionStatus);
+    
     // Chat interface elements (alternative IDs)
     const chatInterface = document.getElementById('chatInterface');
     const userDetailsForm = document.getElementById('userDetailsForm');
     const startChatBtn = document.getElementById('startChatBtn');
+    
+    // Debug alternative DOM elements
+    console.log('Alternative chat interface DOM elements:');
+    console.log('- chatInterface:', chatInterface);
+    console.log('- userDetailsForm:', userDetailsForm);
+    console.log('- startChatBtn:', startChatBtn);
     
     // Handle new form submission
     if (userForm) {
@@ -372,7 +387,12 @@ function isValidEmail(email) {
 
 // Function to update connection status
 function updateConnectionStatus(status, isConnected) {
-    if (!connectionStatus) return;
+    if (!connectionStatus) {
+        console.error('connectionStatus element is null, cannot update status');
+        return;
+    }
+    
+    console.log('Updating connection status to:', status, 'isConnected:', isConnected);
     
     if (status === 'connecting') {
         connectionStatus.innerHTML = `
@@ -389,6 +409,7 @@ function updateConnectionStatus(status, isConnected) {
             </span>
         `;
     } else if (status === 'connected') {
+        console.log('Connection status changed to CONNECTED');
         connectionStatus.innerHTML = `
             <span class="inline-flex items-center">
                 <span class="w-3 h-3 rounded-full bg-green-500 mr-2"></span>
@@ -400,8 +421,13 @@ function updateConnectionStatus(status, isConnected) {
         if (chatInput) chatInput.disabled = false;
         if (sendMessageBtn) sendMessageBtn.disabled = false;
         
+        // Log before adding welcome message
+        console.log('About to add welcome message to chat');
+        
         // Add welcome message
         addMessage('ai', "Hello! I'm your DAI assistant. I'm here to understand your needs and recommend the right AI solutions for you. What kind of challenges are you looking to solve with AI or data?");
+        
+        console.log('Welcome message added');
         
         // Hide status after 5 seconds
         setTimeout(() => {
@@ -445,12 +471,11 @@ function initializeWebSocket() {
     // Update connection status
     updateConnectionStatus(reconnectAttempts > 0 ? 'reconnecting' : 'connecting');
     
-    // Always use secure WebSocket since the server enforces HTTPS
+    // Simply use the secure WebSocket URL - this was working before
     const wsUrl = `wss://dai-temp.onrender.com/chatComplete`;
     
     // Log the WebSocket URL for debugging
     console.log(`Connecting to WebSocket server at: ${wsUrl} (Attempt ${reconnectAttempts + 1}/${maxReconnectAttempts + 1})`);
-    console.log(`Current page protocol: ${window.location.protocol}`);
     
     try {
         // Close previous socket if it exists
@@ -465,18 +490,16 @@ function initializeWebSocket() {
         // Set up connection timeout
         const connectionTimeout = setTimeout(() => {
             if (socket && socket.readyState !== WebSocket.OPEN) {
-                console.error('WebSocket connection timed out after 10 seconds');
-                console.log('Socket readyState at timeout:', socket.readyState);
+                console.error('WebSocket connection timed out');
                 socket.close();
                 reconnectAttempts++;
                 initializeWebSocket(); // Try to reconnect
             }
-        }, 10000); // 10 second timeout (increased from 5 seconds)
+        }, 5000); // 5 second timeout
         
         // Connection opened
         socket.addEventListener('open', (event) => {
             console.log('WebSocket connection established successfully');
-            console.log('WebSocket state:', socket.readyState);
             clearTimeout(connectionTimeout);
             reconnectAttempts = 0; // Reset reconnect counter on successful connection
             updateConnectionStatus('connected', true);
@@ -495,9 +518,8 @@ function initializeWebSocket() {
             // Set up a ping interval to keep the connection alive
             const pingInterval = setInterval(() => {
                 if (socket.readyState === WebSocket.OPEN) {
-                    // Send a simple ping string instead of JSON
                     console.log('Sending ping to keep connection alive');
-                    socket.send('ping');
+                    socket.send(JSON.stringify([{ "role": "ping", "content": "ping" }]));
                 } else {
                     clearInterval(pingInterval);
                 }
@@ -510,8 +532,8 @@ function initializeWebSocket() {
             console.log('Received message from server:', response);
             
             // Handle ping response
-            if (response === "pong" || response === "ping") {
-                console.log('Received ping/pong response');
+            if (response === "pong" || response.includes("ping")) {
+                console.log('Received ping response');
                 return; // Don't display ping responses
             }
             
@@ -521,7 +543,12 @@ function initializeWebSocket() {
                 chatMessages.removeChild(typingIndicator);
             }
             
+            // Add more debugging to check what response we're getting
+            console.log('Response type:', typeof response);
+            console.log('Response length:', response.length);
+            
             if (response && response.trim() !== '') {
+                console.log('Adding message to chat UI...');
                 addMessage('ai', response);
                 
                 // Store message in history
@@ -537,6 +564,8 @@ function initializeWebSocket() {
                 
                 // Scroll to the bottom
                 if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+                
+                console.log('Message added successfully, UI updated');
             } else {
                 console.warn('Received empty response from server');
                 addMessage('system', 'The assistant sent an empty response. Please try asking again.');
@@ -550,16 +579,6 @@ function initializeWebSocket() {
         // Handle errors
         socket.addEventListener('error', (event) => {
             console.error('WebSocket error occurred:', event);
-            console.log('Error details:', {
-                bubbles: event.bubbles,
-                cancelable: event.cancelable,
-                currentTarget: event.currentTarget,
-                defaultPrevented: event.defaultPrevented,
-                eventPhase: event.eventPhase,
-                target: event.target,
-                timeStamp: event.timeStamp,
-                type: event.type
-            });
             clearTimeout(connectionTimeout);
             // The close event will handle reconnection
         });
@@ -603,49 +622,59 @@ function initializeWebSocket() {
 
 // Function to add a message to the chat
 function addMessage(sender, message) {
-    if (!chatMessages) return;
+    console.log(`Adding ${sender} message to chat:`, message.substring(0, 50) + (message.length > 50 ? '...' : ''));
     
-    const messageElement = document.createElement('div');
-    messageElement.className = 'flex items-start mb-4';
-    
-    if (sender === 'user') {
-        messageElement.innerHTML = `
-            <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-white mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-                </svg>
-            </div>
-            <div class="bg-blue-100 dark:bg-blue-900 rounded-lg p-3 max-w-[80%]">
-                <div class="text-sm text-gray-800 dark:text-gray-200">${message}</div>
-            </div>
-        `;
-    } else if (sender === 'ai') {
-        messageElement.innerHTML = `
-            <div class="w-8 h-8 rounded-full bg-[#3E9656] flex-shrink-0 flex items-center justify-center text-white mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                    <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                </svg>
-            </div>
-            <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 max-w-[80%]">
-                <div class="text-sm text-gray-800 dark:text-gray-200">${message}</div>
-            </div>
-        `;
-    } else if (sender === 'system') {
-        messageElement.innerHTML = `
-            <div class="w-8 h-8 rounded-full bg-yellow-500 flex-shrink-0 flex items-center justify-center text-white mr-3">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clip-rule="evenodd" />
-                </svg>
-            </div>
-            <div class="bg-yellow-100 dark:bg-yellow-900 rounded-lg p-3 max-w-[80%]">
-                <div class="text-sm text-gray-800 dark:text-gray-200">${message}</div>
-            </div>
-        `;
+    if (!chatMessages) {
+        console.error('chatMessages element is null, cannot add message');
+        return;
     }
     
-    chatMessages.appendChild(messageElement);
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    try {
+        const messageElement = document.createElement('div');
+        messageElement.className = 'flex items-start mb-4';
+        
+        if (sender === 'user') {
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-white mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="bg-blue-100 dark:bg-blue-900 rounded-lg p-3 max-w-[80%]">
+                    <div class="text-sm text-gray-800 dark:text-gray-200">${message}</div>
+                </div>
+            `;
+        } else if (sender === 'ai') {
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-[#3E9656] flex-shrink-0 flex items-center justify-center text-white mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                        <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 max-w-[80%]">
+                    <div class="text-sm text-gray-800 dark:text-gray-200">${message}</div>
+                </div>
+            `;
+        } else if (sender === 'system') {
+            messageElement.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-yellow-500 flex-shrink-0 flex items-center justify-center text-white mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9a1 1 0 00-1-1z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="bg-yellow-100 dark:bg-yellow-900 rounded-lg p-3 max-w-[80%]">
+                    <div class="text-sm text-gray-800 dark:text-gray-200">${message}</div>
+                </div>
+            `;
+        }
+        
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+        console.log(`${sender} message added successfully`);
+    } catch (error) {
+        console.error('Error adding message to chat:', error);
+    }
 }
 
 // Function to send a message to the server
