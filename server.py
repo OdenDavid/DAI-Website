@@ -119,11 +119,17 @@ async def websocket_endpoint(websocket: WebSocket):
             data = await websocket.receive_text()
             logger.info("Received message from client")
             
+            # Check if this is a simple ping message
+            if data == "ping":
+                logger.debug("Received simple ping, sending pong response")
+                await websocket.send_text("pong")
+                continue
+                
             try:
                 # Parse the message history
                 message_history = json.loads(data)
                 
-                # Check if this is a ping message
+                # Check if this is a ping message in JSON format
                 if len(message_history) == 1 and message_history[0].get("role") == "ping":
                     logger.debug("Received ping, sending pong response")
                     await websocket.send_text("pong")
