@@ -21,6 +21,38 @@ const maxReconnectAttempts = 3;
 
 // When DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
+    // Add CSS for typing animation
+    const style = document.createElement('style');
+    style.textContent = `
+        .typing-animation {
+            display: flex;
+            align-items: center;
+        }
+        .dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            margin: 0 2px;
+            background-color: currentColor;
+            border-radius: 50%;
+            opacity: 0.6;
+        }
+        .dot:nth-child(1) {
+            animation: pulse 1.2s infinite ease-in-out;
+        }
+        .dot:nth-child(2) {
+            animation: pulse 1.2s infinite ease-in-out 0.4s;
+        }
+        .dot:nth-child(3) {
+            animation: pulse 1.2s infinite ease-in-out 0.8s;
+        }
+        @keyframes pulse {
+            0%, 50%, 100% { opacity: 0.6; transform: scale(1); }
+            25% { opacity: 1; transform: scale(1.2); }
+        }
+    `;
+    document.head.appendChild(style);
+    
     // Initialize UI component interactions
     initTabToggles();
     initSmoothScrolling();
@@ -257,10 +289,52 @@ function initChatInterface() {
     // Get DOM elements for chat
     const userForm = document.getElementById('user-form');
     const chatContainer = document.getElementById('chat-container');
-    chatInput = document.getElementById('chat-input');
-    sendMessageBtn = document.getElementById('send-message');
-    chatMessages = document.getElementById('chat-messages');
-    connectionStatus = document.getElementById('connection-status');
+    chatInput = document.getElementById('chatInput');
+    sendMessageBtn = document.getElementById('sendMessageBtn');
+    chatMessages = document.getElementById('chatMessages');
+    connectionStatus = document.getElementById('connectionStatus');
+    
+    // Apply scrollable styling to chat messages container
+    if (chatMessages) {
+        // Set a fixed height for the chat container to make it scrollable
+        chatMessages.style.maxHeight = '400px';
+        chatMessages.style.height = '400px';
+        chatMessages.style.overflowY = 'auto';
+        chatMessages.style.paddingRight = '10px';
+        chatMessages.style.display = 'flex';
+        chatMessages.style.flexDirection = 'column';
+        
+        // Add responsive styling based on screen width
+        if (window.innerWidth < 768) { // Mobile
+            chatMessages.style.height = '300px';
+        } else if (window.innerWidth < 1024) { // Tablet
+            chatMessages.style.height = '350px';
+        } else { // Desktop
+            chatMessages.style.height = '400px';
+        }
+        
+        // Apply some padding and spacing
+        chatMessages.style.padding = '10px';
+        
+        console.log('Applied scrollable styling to chat messages container');
+        
+        // Update height on window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth < 768) { // Mobile
+                chatMessages.style.height = '300px';
+            } else if (window.innerWidth < 1024) { // Tablet
+                chatMessages.style.height = '350px';
+            } else { // Desktop
+                chatMessages.style.height = '400px';
+            }
+        });
+    }
+    
+    if (chatContainer) {
+        // Ensure chat container has proper styling
+        chatContainer.style.display = 'flex';
+        chatContainer.style.flexDirection = 'column';
+    }
     
     // Debug DOM elements
     console.log('Chat interface DOM elements:');
@@ -421,13 +495,9 @@ function updateConnectionStatus(status, isConnected) {
         if (chatInput) chatInput.disabled = false;
         if (sendMessageBtn) sendMessageBtn.disabled = false;
         
-        // Log before adding welcome message
-        console.log('About to add welcome message to chat');
-        
-        // Add welcome message
-        addMessage('ai', "Hello! I'm your DAI assistant. I'm here to understand your needs and recommend the right AI solutions for you. What kind of challenges are you looking to solve with AI or data?");
-        
-        console.log('Welcome message added');
+        // No longer add a welcome message here since server will send one
+        // Just log that we're ready for the server message
+        console.log('Connection ready, waiting for server response');
         
         // Hide status after 5 seconds
         setTimeout(() => {
@@ -631,11 +701,12 @@ function addMessage(sender, message) {
     
     try {
         const messageElement = document.createElement('div');
-        messageElement.className = 'flex items-start mb-4';
         
         if (sender === 'user') {
+            // User messages should be right-aligned
+            messageElement.className = 'flex flex-row-reverse items-start mb-4';
             messageElement.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-white mr-3">
+                <div class="w-8 h-8 rounded-full bg-blue-500 flex-shrink-0 flex items-center justify-center text-white ml-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                     </svg>
@@ -645,6 +716,8 @@ function addMessage(sender, message) {
                 </div>
             `;
         } else if (sender === 'ai') {
+            // AI messages stay left-aligned
+            messageElement.className = 'flex items-start mb-4';
             messageElement.innerHTML = `
                 <div class="w-8 h-8 rounded-full bg-[#3E9656] flex-shrink-0 flex items-center justify-center text-white mr-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -657,6 +730,8 @@ function addMessage(sender, message) {
                 </div>
             `;
         } else if (sender === 'system') {
+            // System messages centered
+            messageElement.className = 'flex items-start mb-4';
             messageElement.innerHTML = `
                 <div class="w-8 h-8 rounded-full bg-yellow-500 flex-shrink-0 flex items-center justify-center text-white mr-3">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
