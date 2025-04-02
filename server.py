@@ -29,7 +29,7 @@ supabase = create_client(supabase_url, supabase_key)
 # Dictionary to store user information and chat history per connection
 client_data = {}
 client_last_activity = {}
-INACTIVITY_TIMEOUT = 15 * 60  # 15 minutes
+INACTIVITY_TIMEOUT = 60  # Temporarily set to 60 seconds (1 minute) for testing
 app = FastAPI()
 
 origins = ["*"]
@@ -327,36 +327,69 @@ async def websocket_endpoint(websocket: WebSocket):
 
 # Function to check for inactive clients
 async def check_inactive_clients():
+    logger.info(f"Starting inactive client check with timeout of {INACTIVITY_TIMEOUT} seconds")
     while True:
         now = datetime.now()
         inactive_clients = []
+        active_count = 0
+        
+        # Log counts for debugging
+        total_clients = len(connected_clients)
+        logger.info(f"Checking {total_clients} connected clients for inactivity")
         
         for ws in connected_clients:
             if ws in client_last_activity:
                 last_active = client_last_activity[ws]
-                if (now - last_active).total_seconds() > INACTIVITY_TIMEOUT:
+                seconds_inactive = (now - last_active).total_seconds()
+                client_id = id(ws)
+                
+                if seconds_inactive > INACTIVITY_TIMEOUT:
                     inactive_clients.append(ws)
+                    logger.info(f"Found inactive client {client_id} - last active {seconds_inactive:.1f} seconds ago")
+                else:
+                    active_count += 1
+                    # Only log detailed info when close to timeout to reduce noise
+                    if seconds_inactive > (INACTIVITY_TIMEOUT * 0.8):
+                        logger.info(f"Client {client_id} still active but getting close to timeout - inactive for {seconds_inactive:.1f} seconds")
+        
+        if not inactive_clients and total_clients > 0:
+            logger.info(f"All {active_count} clients are still active")
         
         for ws in inactive_clients:
-            logger.info(f"Closing inactive connection")
+            logger.info(f"Closing inactive connection due to {INACTIVITY_TIMEOUT} seconds timeout")
             try:
                 # Get client ID for this websocket
                 client_id = id(ws)
+                user_info = "Unknown"
+                if client_id in client_data and client_data[client_id].get("user_info"):
+                    user_info = f"{client_data[client_id]['user_info'].get('name')} ({client_data[client_id]['user_info'].get('email')})"
+                
+                logger.info(f"Saving chat history for inactive client {client_id} - User: {user_info}")
+                
                 # Save chat history to Supabase before closing
                 if client_id in client_data:
                     await save_chat_to_supabase(client_id, client_data.get(client_id, {}))
+                    
                 # Close the connection
                 await ws.close(code=1000, reason="Inactivity timeout")
+                logger.info(f"Successfully closed connection for inactive client {client_id}")
+                
                 # Clean up
                 connected_clients.remove(ws)
                 if ws in client_last_activity:
                     del client_last_activity[ws]
                 if client_id in client_data:
                     del client_data[client_id]
+                logger.info(f"Cleaned up data for inactive client {client_id}")
+                
             except Exception as e:
                 logger.error(f"Error handling inactive client: {str(e)}")
                 # Client might already be disconnected
                 pass
+        
+        # Log summary after processing
+        if inactive_clients:
+            logger.info(f"Inactivity check complete: Closed {len(inactive_clients)} inactive connections, {len(connected_clients)} connections remaining")
         
         # Check every minute
         await asyncio.sleep(60)
