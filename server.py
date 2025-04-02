@@ -3,6 +3,13 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 import os
 import logging
+import asyncio
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+from supabase import create_client
+
+# Load environment variables
+load_dotenv()
 
 # Set up logging
 logging.basicConfig(
@@ -14,6 +21,15 @@ logger = logging.getLogger("dai-chat")
 #2
 from openai import OpenAI
 
+# Initialize Supabase client
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_KEY")
+supabase = create_client(supabase_url, supabase_key)
+
+# Dictionary to store user information and chat history per connection
+client_data = {}
+client_last_activity = {}
+INACTIVITY_TIMEOUT = 15 * 60  # 15 minutes
 app = FastAPI()
 
 origins = ["*"]
@@ -91,6 +107,52 @@ system_message = {"role": "system",
              """
              }
 
+async def save_chat_to_supabase(client_id, conversation_data):
+    """
+    Save chat history to Supabase
+    
+    Args:
+        client_id: Unique identifier for the client connection
+        conversation_data: Dict containing user info and chat history
+    """
+    try:
+        if not conversation_data or not conversation_data.get('messages'):
+            logger.warning(f"No chat data to save for client {client_id}")
+            return
+            
+        user_info = conversation_data.get('user_info', {})
+        messages = conversation_data.get('messages', [])
+        
+        # Skip if there are no actual user messages (only system messages)
+        user_messages = [msg for msg in messages if msg.get('role') != 'system']
+        if not user_messages:
+            logger.info(f"No user messages to save for client {client_id}")
+            return
+            
+        # Extract user details
+        name = user_info.get('name', 'Unknown')
+        email = user_info.get('email', 'Unknown')
+        
+        # Create conversation record
+        conversation_record = {
+            "user_name": name,
+            "user_email": email,
+            "started_at": conversation_data.get('started_at', datetime.now().isoformat()),
+            "ended_at": datetime.now().isoformat(),
+            "messages": json.dumps(messages)
+        }
+        
+        # Save to Supabase
+        result = supabase.table('conversations').insert(conversation_record).execute()
+        
+        if hasattr(result, 'data') and result.data:
+            logger.info(f"Successfully saved chat history for {name} ({email})")
+        else:
+            logger.warning(f"Failed to save chat history: {result}")
+            
+    except Exception as e:
+        logger.error(f"Error saving chat history to Supabase: {str(e)}")
+
 @app.get("/")
 def read_root():
     return {"message": "WebSocket server is running. Connect to /chatComplete for chat functionality."}
@@ -100,7 +162,9 @@ def read_root():
 def health_check():
     if not api_key:
         raise HTTPException(status_code=500, detail="OpenAI API key not configured")
-    return {"status": "healthy", "api_key_configured": bool(api_key)}
+    if not supabase_url or not supabase_key:
+        raise HTTPException(status_code=500, detail="Supabase configuration missing")
+    return {"status": "healthy", "api_key_configured": bool(api_key), "supabase_configured": bool(supabase_url and supabase_key)}
 
 # Store WebSocket connections
 connected_clients = set()
@@ -111,12 +175,26 @@ async def websocket_endpoint(websocket: WebSocket):
     logger.info("New WebSocket connection attempt")
     await websocket.accept()
     logger.info("WebSocket connection accepted")
+    
+    # Generate a unique client ID
+    client_id = id(websocket)
+    
+    # Initialize client data
+    client_data[client_id] = {
+        "user_info": {"name": "Unknown", "email": "Unknown"},
+        "messages": [],
+        "started_at": datetime.now().isoformat()
+    }
+    
     connected_clients.add(websocket)
+    client_last_activity[websocket] = datetime.now()  # Set initial activity timestamp
     
     try:
         while True:
             # Wait for message from client
             data = await websocket.receive_text()
+            # Update the last activity timestamp
+            client_last_activity[websocket] = datetime.now()
             logger.info("Received message from client")
             
             # Check if this is a simple ping message
@@ -126,12 +204,44 @@ async def websocket_endpoint(websocket: WebSocket):
                 continue
                 
             try:
-                # Parse the message history
-                message_history = json.loads(data)
+                # Parse the message data
+                parsed_data = json.loads(data)
                 
-                # Check if this is a ping message in JSON format
+                # Initialize message_history
+                message_history = []
+                
+                # Check if this is the new format with metadata
+                if isinstance(parsed_data, dict) and "metadata" in parsed_data:
+                    # Extract metadata and messages separately
+                    metadata = parsed_data.get("metadata", {})
+                    message_history = parsed_data.get("messages", [])
+                    
+                    # Update client data with metadata
+                    client_data[client_id]["user_info"] = {
+                        "name": metadata.get("name", "Unknown"),
+                        "email": metadata.get("email", "Unknown")
+                    }
+                    
+                    # Log the received metadata
+                    logger.info(f"Received metadata: {metadata}")
+                    
+                elif isinstance(parsed_data, dict) and "type" in parsed_data and parsed_data["type"] == "ping":
+                    # This is a ping message with timestamp
+                    logger.debug("Received ping with timestamp, sending pong response")
+                    await websocket.send_text(json.dumps({"type": "pong", "timestamp": parsed_data.get("timestamp")}))
+                    continue
+                    
+                else:
+                    # Old format without metadata, assume it's just message history
+                    message_history = parsed_data
+                
+                # Store messages for this client
+                if message_history:
+                    client_data[client_id]["messages"] = message_history
+                
+                # Check if this is a ping message in message format
                 if len(message_history) == 1 and message_history[0].get("role") == "ping":
-                    logger.debug("Received ping, sending pong response")
+                    logger.debug("Received ping in message format, sending pong response")
                     await websocket.send_text("pong")
                     continue
                 
@@ -151,6 +261,12 @@ async def websocket_endpoint(websocket: WebSocket):
                 assistant_reply = response.choices[0].message.content
                 logger.info(f"Received response from OpenAI: {assistant_reply[:50]}...")  # Log first 50 chars
                 
+                # Add the assistant's reply to our stored messages
+                client_data[client_id]["messages"].append({
+                    "role": "assistant",
+                    "content": assistant_reply
+                })
+                
                 # Send the response back to the client
                 await websocket.send_text(assistant_reply)
                 logger.info("Sent response to client")
@@ -164,10 +280,52 @@ async def websocket_endpoint(websocket: WebSocket):
                 
     except WebSocketDisconnect:
         logger.info("WebSocket disconnected")
+        # Save chat history to Supabase before cleanup
+        await save_chat_to_supabase(client_id, client_data.get(client_id, {}))
+        # Clean up
         connected_clients.remove(websocket)
-    except Exception as e:
-        logger.error(f"Unexpected WebSocket error: {str(e)}")
-        try:
-            connected_clients.remove(websocket)
-        except:
-            pass
+        if websocket in client_last_activity:
+            del client_last_activity[websocket]
+        if client_id in client_data:
+            del client_data[client_id]
+
+# Function to check for inactive clients
+async def check_inactive_clients():
+    while True:
+        now = datetime.now()
+        inactive_clients = []
+        
+        for ws in connected_clients:
+            if ws in client_last_activity:
+                last_active = client_last_activity[ws]
+                if (now - last_active).total_seconds() > INACTIVITY_TIMEOUT:
+                    inactive_clients.append(ws)
+        
+        for ws in inactive_clients:
+            logger.info(f"Closing inactive connection")
+            try:
+                # Get client ID for this websocket
+                client_id = id(ws)
+                # Save chat history to Supabase before closing
+                if client_id in client_data:
+                    await save_chat_to_supabase(client_id, client_data.get(client_id, {}))
+                # Close the connection
+                await ws.close(code=1000, reason="Inactivity timeout")
+                # Clean up
+                connected_clients.remove(ws)
+                if ws in client_last_activity:
+                    del client_last_activity[ws]
+                if client_id in client_data:
+                    del client_data[client_id]
+            except Exception as e:
+                logger.error(f"Error handling inactive client: {str(e)}")
+                # Client might already be disconnected
+                pass
+        
+        # Check every minute
+        await asyncio.sleep(60)
+
+# Start the background task when the app starts
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(check_inactive_clients())
