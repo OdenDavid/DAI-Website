@@ -121,17 +121,33 @@ async def save_chat_to_supabase(client_id, conversation_data):
             return
             
         user_info = conversation_data.get('user_info', {})
-        messages = conversation_data.get('messages', [])
+        all_messages = conversation_data.get('messages', [])
         
-        # Skip if there are no actual user messages (only system messages)
-        user_messages = [msg for msg in messages if msg.get('role') != 'system']
-        if not user_messages:
-            logger.info(f"No user messages to save for client {client_id}")
+        # Filter out ping messages
+        filtered_messages = []
+        for msg in all_messages:
+            # Skip ping messages or empty messages
+            if not msg or not isinstance(msg, dict):
+                continue
+            
+            # Skip messages with role "ping" or that contain "ping" in content
+            if msg.get('role') == 'ping' or 'activity_ping' in str(msg.get('content', '')):
+                continue
+                
+            # Add valid messages to our filtered list
+            filtered_messages.append(msg)
+        
+        # Skip if there are no actual messages (only ping messages)
+        if not filtered_messages:
+            logger.info(f"No meaningful messages to save for client {client_id} (only ping messages found)")
             return
             
         # Extract user details
         name = user_info.get('name', 'Unknown')
         email = user_info.get('email', 'Unknown')
+        
+        # Log the number of messages being saved
+        logger.info(f"Saving {len(filtered_messages)} messages for {name} ({email})")
         
         # Create conversation record
         conversation_record = {
@@ -139,7 +155,7 @@ async def save_chat_to_supabase(client_id, conversation_data):
             "user_email": email,
             "started_at": conversation_data.get('started_at', datetime.now().isoformat()),
             "ended_at": datetime.now().isoformat(),
-            "messages": json.dumps(messages)
+            "messages": json.dumps(filtered_messages)
         }
         
         # Save to Supabase
@@ -235,9 +251,17 @@ async def websocket_endpoint(websocket: WebSocket):
                     # Old format without metadata, assume it's just message history
                     message_history = parsed_data
                 
-                # Store messages for this client
+                # Filter out ping messages before storing
                 if message_history:
-                    client_data[client_id]["messages"] = message_history
+                    # Only store non-ping messages
+                    real_messages = []
+                    for msg in message_history:
+                        if isinstance(msg, dict) and msg.get("role") != "ping" and "activity_ping" not in str(msg.get("content", "")):
+                            real_messages.append(msg)
+                    
+                    # Replace client's message history if we have real messages
+                    if real_messages:
+                        client_data[client_id]["messages"] = real_messages
                 
                 # Check if this is a ping message in message format
                 if len(message_history) == 1 and message_history[0].get("role") == "ping":
@@ -245,11 +269,23 @@ async def websocket_endpoint(websocket: WebSocket):
                     await websocket.send_text("pong")
                     continue
                 
+                # Get the last actual user message for processing (skip ping messages)
+                last_user_message = None
+                for msg in reversed(message_history):
+                    if isinstance(msg, dict) and msg.get("role") == "user" and msg.get("content") and "activity_ping" not in str(msg.get("content", "")):
+                        last_user_message = msg
+                        break
+                
+                # If no valid user message, don't process
+                if not last_user_message:
+                    logger.info("No valid user message found, skipping processing")
+                    continue
+                
                 # Create a copy of the message history and insert the system message at the beginning
-                full_message_history = [system_message] + message_history
+                full_message_history = [system_message] + [msg for msg in message_history if isinstance(msg, dict) and msg.get("role") != "ping"]
                 
                 # Log what we're sending to OpenAI (excluding system message for brevity)
-                logger.info(f"Sending to OpenAI: User message: {message_history[-1]['content'] if message_history else 'No messages'}")
+                logger.info(f"Sending to OpenAI: User message: {last_user_message.get('content', 'No content')}")
                 
                 # Call OpenAI API
                 response = client.chat.completions.create(
