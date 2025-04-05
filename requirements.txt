@@ -4,3 +4,4 @@ uvicorn[standard]
 websockets
 python-dotenv
 supabase
+email-validator
