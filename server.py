@@ -7,6 +7,8 @@ import asyncio
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
 from supabase import create_client
+from pydantic import BaseModel, EmailStr
+from typing import List
 
 # Load environment variables
 load_dotenv()
@@ -398,3 +400,93 @@ async def check_inactive_clients():
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(check_inactive_clients())
+
+# New model for email subscription
+class EmailSubscription(BaseModel):
+    email: EmailStr
+
+# Function to save email to Supabase
+async def save_email_to_supabase(email: str):
+    """
+    Save email to Supabase
+    
+    Args:
+        email: Email address to save
+    """
+    try:
+        # Check if the email already exists
+        result = supabase.table('subscribers').select('email').eq('email', email).execute()
+        
+        # If email doesn't exist, insert it
+        if not result.data:
+            # Insert the new subscriber
+            insert_result = supabase.table('subscribers').insert({"email": email}).execute()
+            
+            if hasattr(insert_result, 'data') and insert_result.data:
+                logger.info(f"Saved new subscriber email to Supabase: {email}")
+                return True
+            else:
+                logger.warning(f"Failed to save subscriber to Supabase: {insert_result}")
+                return False
+        else:
+            # Email already exists, consider this a success
+            logger.info(f"Email already subscribed: {email}")
+            return True
+            
+    except Exception as e:
+        logger.error(f"Error saving email to Supabase: {str(e)}")
+        return False
+
+# New route to handle email subscriptions
+@app.post("/subscribe")
+async def subscribe(subscription: EmailSubscription):
+    """
+    Handle email subscription
+    
+    Args:
+        subscription: Email subscription data
+    """
+    try:
+        # Save the email to Supabase
+        if await save_email_to_supabase(subscription.email):
+            return {"status": "success", "message": "Subscription successful"}
+        else:
+            raise HTTPException(status_code=500, detail="Failed to save subscription")
+    except Exception as e:
+        logger.error(f"Error in subscribe endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+# Function to get all subscribers
+async def get_all_subscribers() -> List[dict]:
+    """
+    Get all subscribers from Supabase
+    
+    Returns:
+        List of subscriber records
+    """
+    try:
+        # Query all active subscribers
+        result = supabase.table('subscribers').select('*').eq('active', True).execute()
+        
+        if hasattr(result, 'data'):
+            return result.data
+        else:
+            logger.warning(f"Failed to get subscribers from Supabase: {result}")
+            return []
+            
+    except Exception as e:
+        logger.error(f"Error getting subscribers from Supabase: {str(e)}")
+        return []
+
+# Endpoint to get all subscribers (admin only - you may want to add authentication)
+@app.get("/subscribers")
+async def get_subscribers():
+    """
+    Get all subscribers
+    """
+    try:
+        subscribers = await get_all_subscribers()
+        return {"count": len(subscribers), "subscribers": subscribers}
+    except Exception as e:
+        logger.error(f"Error in get_subscribers endpoint: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
