@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DAI: Data Assisted Intelligence</title>
+    <title>DAI: Coming Soon</title>
+    <link rel="icon" type="image/png" href="images/logobig.png">
+    <link rel="apple-touch-icon" href="images/logobig.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="./tailwind.config.js"></script>
     <style>
         :root {
             --primary-color: #3E9656;
@@ -17,97 +18,61 @@
             background-color: #f8fdf9;
         }
         
-        nav li a:hover {
-            color: var(--primary-color);
-            transition: color 0.3s ease;
-        }
-        
         .primary-gradient {
             background-image: linear-gradient(to right, var(--primary-dark), var(--primary-color), var(--primary-light));
         }
 
-        /* Testimonial Carousel Styles */
-        .testimonial-slide {
-            opacity: 1;
-            transition: opacity 0.4s ease-in-out;
+        .countdown-item {
+            background-color: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(62, 150, 86, 0.2);
         }
         
-        .testimonial-slide.hidden {
-            opacity: 0;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            pointer-events: none;
+        .pulse-circle {
+            animation: pulse 3s infinite;
         }
         
-        .testimonial-slide.active {
-            opacity: 1;
-            position: relative;
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.3;
+            }
+            100% {
+                transform: scale(1);
+                opacity: 0.5;
+            }
         }
         
-        #prevTestimonial, #nextTestimonial {
-            opacity: 0.7;
-            transition: opacity 0.3s, background-color 0.3s;
+        .float-element {
+            animation: float 6s ease-in-out infinite;
         }
         
-        #prevTestimonial:hover, #nextTestimonial:hover {
-            opacity: 1;
-        }
-        
-        .indicator-dot {
-            transition: background-color 0.3s ease;
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+            100% {
+                transform: translateY(0px);
+            }
         }
     </style>
 </head>
 <body class="overflow-x-hidden">
-    <nav class="w-full fixed items-center px-5 lg:px-8 xl:px-[8%] py-4 flex
-                items-center justify-between z-50">
-        <img src="images/logo.png" alt="DAI Logo" class="w-28 cursor-pointer mr-14">
-        <ul class="hidden md:flex items-center gap-6 lg:gap-8 rounded-full px-12 py-3
-                    bg-white shadow-sm bg-opacity-50 backdrop-blur-sm border border-[#3E9656]/20">
-            <li><a href="#home" class="hover:text-[#3E9656] transition-colors">Home</a></li>
-            <li><a href="#about" class="hover:text-[#3E9656] transition-colors">About</a></li>
-            <li><a href="#services" class="hover:text-[#3E9656] transition-colors">Services</a></li>
-            <li><a href="#projects" class="hover:text-[#3E9656] transition-colors">Projects</a></li>
-            <li><a href="#clients" class="hover:text-[#3E9656] transition-colors">Clients</a></li>
-        </ul>
-
-        <div class="flex items-center gap-4">
-            <a href="#contact" class="hidden lg:flex items-center gap-3 rounded-full px-10 py-2.5
-            border border-[#3E9656] text-[#3E9656] hover:bg-[#3E9656] hover:text-white transition-colors ml-4">
-                Contact
-            </a>
-
-            <button class="block md:hidden ml-3" onclick="openMenu()">
-                <img src="images/menu.png" alt="Menu" class="w-6">
-            </button>
-        </div>
-        <!-- Mobile Menu -->
-        <ul id="mobileMenu" class="flex md:hidden flex-col py-20 px-10 fixed -right-64 gap-4
-                                    top-0 bottom-0 w-64 z-50 h-screen bg-[#eef7f0] border-l-4 border-[#3E9656] transition duration-500">
-            
-            <div class="absolute top-6 right-6" onclick="closeMenu()">
-                <img src="images/close.png" alt="Close" class="w-6 cursor-pointer">
-            </div>
-            <li><a href="#home" class="text-[#3E9656]" onclick="closeMenu()">Home</a></li>
-            <li><a href="#about" class="hover:text-[#3E9656] transition-colors" onclick="closeMenu()">About</a></li>
-            <li><a href="#services" class="hover:text-[#3E9656] transition-colors" onclick="closeMenu()">Services</a></li>
-            <li><a href="#projects" class="hover:text-[#3E9656] transition-colors" onclick="closeMenu()">Projects</a></li>
-            <li><a href="#clients" class="hover:text-[#3E9656] transition-colors" onclick="closeMenu()">Clients</a></li>
-            <li><a href="#contact" class="hover:text-[#3E9656] transition-colors" onclick="closeMenu()">Contact</a></li>
-        </ul>
-    </nav>
-
-    <!-- Home Section -->
-    <div id="home" class="w-11/12 max-w-3xl text-center mx-auto h-screen flex flex-col justify-center items-center gap-5 relative overflow-hidden">
+    <div class="w-full min-h-screen flex flex-col justify-center items-center relative overflow-hidden px-4">
         <!-- Decorative Elements - Top Left -->
-        <div class="absolute top-[10%] left-[5%] w-20 h-20 rounded-full bg-[#3E9656]/5 animate-pulse"></div>
+        <div class="absolute top-[10%] left-[5%] w-20 h-20 rounded-full bg-[#3E9656]/5 pulse-circle"></div>
         <div class="absolute top-[15%] left-[10%] w-4 h-4 rounded-full bg-[#3E9656]/20"></div>
-        <div class="absolute top-[20%] left-[15%] w-8 h-8 border-2 border-[#3E9656]/10 rounded-md transform rotate-45"></div>
+        <div class="absolute top-[20%] left-[15%] w-8 h-8 border-2 border-[#3E9656]/10 rounded-md transform rotate-45 float-element"></div>
         
         <!-- Decorative Elements - Top Right -->
-        <div class="absolute top-[12%] right-[8%] w-12 h-12 border-2 border-dashed border-[#3E9656]/20 rounded-full"></div>
+        <div class="absolute top-[12%] right-[8%] w-12 h-12 border-2 border-dashed border-[#3E9656]/20 rounded-full float-element"></div>
         <div class="absolute top-[18%] right-[15%] w-6 h-6 bg-[#3E9656]/10 rounded-md transform rotate-12"></div>
         <div class="absolute top-[25%] right-[10%]">
             <svg class="w-5 h-5 text-[#3E9656]/30" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -122,18 +87,18 @@
             </svg>
         </div>
         <div class="absolute bottom-[25%] left-[20%] w-3 h-3 bg-[#3E9656]/30 rounded-full"></div>
-        <div class="absolute bottom-[15%] left-[8%] w-6 h-6 border-2 border-[#3E9656]/10 rounded-full"></div>
+        <div class="absolute bottom-[15%] left-[8%] w-6 h-6 border-2 border-[#3E9656]/10 rounded-full float-element"></div>
         
         <!-- Decorative Elements - Bottom Right -->
         <div class="absolute bottom-[20%] right-[15%] w-10 h-10 bg-[#3E9656]/5 rounded-full"></div>
-        <div class="absolute bottom-[12%] right-[10%] w-4 h-12 bg-[#3E9656]/10 rounded-full transform rotate-45"></div>
+        <div class="absolute bottom-[12%] right-[10%] w-4 h-12 bg-[#3E9656]/10 rounded-full transform rotate-45 float-element"></div>
         <div class="absolute bottom-[28%] right-[18%]">
             <svg class="w-6 h-6 text-[#3E9656]/20" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                 <path d="M64 256c0 88.4 71.6 160 160 160c28.9 0 56-7.7 79.4-21.1l-72-86.4c-11.3-13.6-9.5-33.8 4.1-45.1s33.8-9.5 45.1 4.1l72 86.4c13.4-23.4 21.1-50.5 21.1-79.4c0-88.4-71.6-160-160-160S64 167.6 64 256zM344.9 344.9c-22.7 22.7-53.5 36.5-88.4 36.5c-92.5 0-167.4-75-167.4-167.4c0-92.5 75-167.4 167.4-167.4c92.5 0 167.4 75 167.4 167.4c0 34.9-13.8 65.7-36.5 88.4l95.5 95.5c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0l-95.5-95.5-92.3 92.3L391 439.8l-46.1-46.1z"/>
             </svg>
         </div>
         
-        <!-- Floating Data Points (Scattered across the section) -->
+        <!-- Floating Data Points -->
         <div class="absolute top-[45%] left-[5%] w-1.5 h-1.5 bg-[#3E9656]/40 rounded-full"></div>
         <div class="absolute top-[38%] left-[22%] w-2 h-2 bg-[#3E9656]/30 rounded-full"></div>
         <div class="absolute top-[60%] left-[18%] w-1 h-1 bg-[#3E9656]/50 rounded-full"></div>
@@ -145,999 +110,154 @@
         <div class="absolute top-[40%] left-[7%] w-20 h-0.5 bg-[#3E9656]/10 transform rotate-45"></div>
         <div class="absolute top-[50%] right-[7%] w-16 h-0.5 bg-[#3E9656]/10 transform -rotate-30"></div>
         
-        <!-- Main Content (Original) -->
-        <h1 class="text-3xl sm:text-6xl lg:text-[66px] relative">
-            <span class="text-[#3E9656] font-bold">Data</span> Assisted <span class="text-[#3E9656] font-bold">Intelligence</span>
-            <div class="absolute w-20 h-1 bg-[#3E9656] bottom-0 left-1/2 transform -translate-x-1/2 rounded-full"></div>
-        </h1>
-        <p class="max-w-xl mx-auto text-gray-700 relative z-10">
-            Build anything with your data. DAI dives deep into your unique workflow,
-            collaboratively uncovering hidden efficiency opportunities that transform
-            your <span class="text-[#3E9656] font-semibold">raw data</span> into precision-engineered solutions—whether you're a growing
-            business or an individual looking to <span class="text-[#3E9656] font-semibold">supercharge your productivity</span>.
-        </p>
-        <div class="relative z-10">
-            <a href="#contact" class="px-10 py-3 rounded-full bg-gradient-to-r from-[#2d7040] via-[#3E9656] to-[#4fad69]
-            text-white flex items-center gap-2 hover:shadow-lg hover:shadow-[#3E9656]/30 transition-shadow"> 
-                Find out how <img src="images/right-arrow.png" alt="" class="w-4">
-            </a>
+        <!-- Main Content -->
+        <div class="w-11/12 max-w-3xl text-center mx-auto flex flex-col justify-center items-center gap-5 relative z-10">
+            <img src="images/logo.png" alt="DAI Logo" class="w-32 mb-6">
+            
+            <h1 class="text-3xl sm:text-6xl lg:text-[66px] relative mb-2">
+                <span class="text-[#3E9656] font-bold">Coming</span> Soon
+                <div class="absolute w-20 h-1 bg-[#3E9656] bottom-0 left-1/2 transform -translate-x-1/2 rounded-full"></div>
+            </h1>
+            
+            <p class="max-w-xl mx-auto text-gray-700 text-lg mb-8">
+                Let's help you build more intelligent applications. <span class="text-[#3E9656] font-semibold">DAI</span> will transform how your systems interact with your data,
+                uncovering hidden efficiency opportunities and supercharging your productivity.
+            </p>
+            
+            <!-- Countdown Timer -->
+            <div class="flex flex-wrap justify-center gap-4 my-8">
+                <div class="countdown-item w-20 h-20 rounded-lg flex flex-col justify-center items-center">
+                    <span id="days" class="text-2xl font-bold text-[#3E9656]">00</span>
+                    <span class="text-xs text-gray-600">Days</span>
+                </div>
+                <div class="countdown-item w-20 h-20 rounded-lg flex flex-col justify-center items-center">
+                    <span id="hours" class="text-2xl font-bold text-[#3E9656]">00</span>
+                    <span class="text-xs text-gray-600">Hours</span>
+                </div>
+                <div class="countdown-item w-20 h-20 rounded-lg flex flex-col justify-center items-center">
+                    <span id="minutes" class="text-2xl font-bold text-[#3E9656]">00</span>
+                    <span class="text-xs text-gray-600">Minutes</span>
+                </div>
+                <div class="countdown-item w-20 h-20 rounded-lg flex flex-col justify-center items-center">
+                    <span id="seconds" class="text-2xl font-bold text-[#3E9656]">00</span>
+                    <span class="text-xs text-gray-600">Seconds</span>
+                </div>
+            </div>
+            
+            <!-- Newsletter Sign-up -->
+            <div class="w-full max-w-md bg-white rounded-xl p-6 shadow-lg border border-[#3E9656]/10">
+                <h3 class="text-xl font-semibold mb-3">Get Notified When We're Live</h3>
+                <p class="text-sm text-gray-600 mb-4">Be the first to know when our site goes live and receive exclusive early access.</p>
+                <form id="newsletter-form" class="flex flex-col sm:flex-row gap-2">
+                    <input type="email" id="email" name="email" placeholder="Enter your email" class="flex-1 px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-[#3E9656]" required>
+                    <button type="submit" class="px-6 py-2 rounded-lg bg-gradient-to-r from-[#2d7040] via-[#3E9656] to-[#4fad69] text-white hover:shadow-lg hover:shadow-[#3E9656]/30 transition-shadow">
+                        Notify Me
+                    </button>
+                </form>
+                <p id="form-message" class="mt-2 text-sm text-center hidden"></p>
+            </div>
+            
+            <!-- Social Links -->
+            <div class="flex gap-4 mt-8">
+                <a href="https://x.com/usedainow" class="w-10 h-10 rounded-full flex items-center justify-center border border-[#3E9656]/30 hover:bg-[#3E9656] hover:text-white transition-colors text-[#3E9656]">
+                    <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+                        <path d="M459.4 151.7c.3 4.5 .3 9.1 .3 13.6 0 138.7-105.6 298.6-298.6 298.6-59.5 0-114.7-17.2-161.1-47.1 8.4 1 16.6 1.3 25.3 1.3 49.1 0 94.2-16.6 130.3-44.8-46.1-1-84.8-31.2-98.1-72.8 6.5 1 13 1.6 19.8 1.6 9.4 0 18.8-1.3 27.6-3.6-48.1-9.7-84.1-52-84.1-103v-1.3c14 7.8 30.2 12.7 47.4 13.3-28.3-18.8-46.8-51-46.8-87.4 0-19.5 5.2-37.4 14.3-53 51.7 63.7 129.3 105.3 216.4 109.8-1.6-7.8-2.6-15.9-2.6-24 0-57.8 46.8-104.9 104.9-104.9 30.2 0 57.5 12.7 76.7 33.1 23.7-4.5 46.5-13.3 66.6-25.3-7.8 24.4-24.4 44.8-46.1 57.8 21.1-2.3 41.6-8.1 60.4-16.2-14.3 20.8-32.2 39.3-52.6 54.3z"/>
+                    </svg>
+                </a>
+                <a href="https://www.instagram.com/usedainow/" class="w-10 h-10 rounded-full flex items-center justify-center border border-[#3E9656]/30 hover:bg-[#3E9656] hover:text-white transition-colors text-[#3E9656]">
+                    <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9 287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7 74.7 33.5 74.7 74.7-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9s58 34.4 93.9 36.2c37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1-9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/>
+                    </svg>
+                </a>
+                <a href="https://www.linkedin.com/company/106410578/" class="w-10 h-10 rounded-full flex items-center justify-center border border-[#3E9656]/30 hover:bg-[#3E9656] hover:text-white transition-colors text-[#3E9656]">
+                    <svg class="w-5 h-5" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                        <path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/>
+                    </svg>
+                </a>
+            </div>
+            
+            <p class="text-gray-500 text-sm mt-10">© 2025 DAI - Data Assisted Intelligence. All rights reserved.</p>
         </div>
         
         <!-- Additional data-themed decorative elements -->
-        <div class="absolute bottom-[40%] left-[3%] opacity-20">
+        <div class="absolute bottom-[40%] left-[3%] opacity-20 float-element">
             <svg class="w-20 h-20 text-[#3E9656]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"></path>
             </svg>
         </div>
-        <div class="absolute bottom-[35%] right-[3%] opacity-20">
+        <div class="absolute bottom-[35%] right-[3%] opacity-20 float-element">
             <svg class="w-24 h-24 text-[#3E9656]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 9l4-4 4 4m0 6l-4 4-4-4"></path>
             </svg>
         </div>
     </div>
 
-    <!-- About Us Section -->
-    <section id="about" class="py-20 bg-[#f0f8f3]">
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
-            <div class="flex flex-col md:flex-row items-center gap-10">
-                <!-- Image/Graphic Placeholder -->
-                <div class="w-full md:w-1/2 flex justify-center">
-                    <div class="w-full max-w-md h-80 bg-[#e0f0e4] rounded-lg flex items-center justify-center border-2 border-[#3E9656]/30">
-                        <!-- Replace this with your actual image -->
-                        <div class="text-center p-4">
-                            <!-- Replacing placeholder with actual image -->
-                            <img src="images/team.webp" alt="DAI Team" class="w-full h-auto rounded-lg object-cover">
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Text Content -->
-                <div class="w-full md:w-1/2">
-                    <div class="flex items-center mb-4">
-                        <div class="w-10 h-1 bg-[#3E9656]"></div>
-                        <h2 class="text-2xl md:text-3xl font-bold ml-4 text-[#2d7040]">About Us</h2>
-                    </div>
-                    
-                    <p class="text-gray-700 mb-6 leading-relaxed">
-                        DAI was founded on a simple belief: <span class="text-[#3E9656] font-medium">everyone deserves access to the power of data and AI</span>. Our team combines deep technical expertise with business acumen to deliver solutions that create real impact.
-                    </p>
-                    
-                    <p class="text-gray-700 mb-8 leading-relaxed">
-                        Our approach is collaborative and practical. We don't just implement technology—we solve problems and create opportunities using data as our foundation.
-                    </p>
-                    
-                    <!-- Value Propositions with Icons -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div class="flex items-start">
-                            <!-- Icon Placeholder -->
-                            <div class="w-12 h-12 bg-[#3E9656]/10 rounded-full flex items-center justify-center mr-4">
-                                <div class="w-6 h-6 rounded-full bg-[#3E9656] flex items-center justify-center">
-                                    <span class="text-white text-xs font-bold">E</span>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-[#3E9656]">Expertise</h3>
-                                <p class="text-sm text-gray-600">Deep technical knowledge meets business understanding</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start">
-                            <!-- Icon Placeholder -->
-                            <div class="w-12 h-12 bg-[#3E9656]/10 rounded-full flex items-center justify-center mr-4">
-                                <div class="w-6 h-6 rounded-full bg-[#3E9656] flex items-center justify-center">
-                                    <span class="text-white text-xs font-bold">C</span>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-[#3E9656]">Collaboration</h3>
-                                <p class="text-sm text-gray-600">We work alongside you to ensure success</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start">
-                            <!-- Icon Placeholder -->
-                            <div class="w-12 h-12 bg-[#3E9656]/10 rounded-full flex items-center justify-center mr-4">
-                                <div class="w-6 h-6 rounded-full bg-[#3E9656] flex items-center justify-center">
-                                    <span class="text-white text-xs font-bold">I</span>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-[#3E9656]">Impact</h3>
-                                <p class="text-sm text-gray-600">Solutions that deliver measurable results</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex items-start">
-                            <!-- Icon Placeholder -->
-                            <div class="w-12 h-12 bg-[#3E9656]/10 rounded-full flex items-center justify-center mr-4">
-                                <div class="w-6 h-6 rounded-full bg-[#3E9656] flex items-center justify-center">
-                                    <span class="text-white text-xs font-bold">A</span>
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="font-semibold text-[#3E9656]">Accessibility</h3>
-                                <p class="text-sm text-gray-600">Making data solutions available to everyone</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Services Section -->
-    <section id="services" class="py-20">
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
-            <!-- Section Header -->
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Services</h2>
-                <div class="w-20 h-1 bg-[#3E9656] mx-auto"></div>
-                <p class="mt-6 max-w-2xl mx-auto text-gray-600">
-                    Our data-driven solutions help businesses and individuals leverage the power of AI for growth and efficiency.
-                </p>
-            </div>
-
-            <!-- Toggle Buttons -->
-            <div class="flex justify-center mb-12">
-                <div class="p-1 bg-[#e0f0e4] rounded-full inline-flex">
-                    <button id="businessTab" class="px-6 py-3 rounded-full bg-[#3E9656] text-white font-medium focus:outline-none transition-all">
-                        For Businesses
-                    </button>
-                    <button id="individualTab" class="px-6 py-3 rounded-full text-[#3E9656] font-medium focus:outline-none transition-all">
-                        For Individuals
-                    </button>
-                </div>
-            </div>
-
-            <!-- Business Services Content -->
-            <div id="businessContent" class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <!-- Service Card 1 -->
-                <div class="bg-white p-8 rounded-xl shadow-lg border border-[#3E9656]/10 hover:shadow-xl hover:border-[#3E9656]/30 transition-all">
-                    <!-- Icon Placeholder -->
-                    <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
-                        <div class="w-8 h-8 rounded-full bg-[#3E9656] flex items-center justify-center">
-                            <span class="text-white text-sm font-bold">AI</span>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-[#2d7040] mb-4">Custom AI Solutions</h3>
-                    <p class="text-gray-600 mb-6">
-                        We design, develop, and deploy AI systems tailored to your specific industry challenges. From predictive analytics to processing natural language, our solutions integrate seamlessly with your existing infrastructure.
-                    </p>
-                    
-                </div>
-
-                <!-- Service Card 2 -->
-                <div class="bg-white p-8 rounded-xl shadow-lg border border-[#3E9656]/10 hover:shadow-xl hover:border-[#3E9656]/30 transition-all">
-                    <!-- Icon Placeholder -->
-                    <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
-                        <div class="w-8 h-8 rounded-full bg-[#3E9656] flex items-center justify-center">
-                            <span class="text-white text-sm font-bold">DE</span>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-[#2d7040] mb-4">Data Engineering</h3>
-                    <p class="text-gray-600 mb-6">
-                        Our ELT (Extract, Load, Transform) processes ensure your data is clean, accessible, and ready for analysis. We build robust pipelines that scale with your needs and create single sources of truth for your organization.
-                    </p>
-                    
-                </div>
-
-                <!-- Service Card 3 -->
-                <div class="bg-white p-8 rounded-xl shadow-lg border border-[#3E9656]/10 hover:shadow-xl hover:border-[#3E9656]/30 transition-all">
-                    <!-- Icon Placeholder -->
-                    <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
-                        <div class="w-8 h-8 rounded-full bg-[#3E9656] flex items-center justify-center">
-                            <span class="text-white text-sm font-bold">WA</span>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-[#2d7040] mb-4">Workflow Automation</h3>
-                    <p class="text-gray-600 mb-6">
-                        Identify bottlenecks and inefficiencies in your operations, then eliminate them with intelligent automation. Our solutions reduce human error, free up valuable time, and increase overall productivity.
-                    </p>
-                    
-                </div>
-            </div>
-
-            <!-- Individual Services Content (Initially Hidden) -->
-            <div id="individualContent" class="grid grid-cols-1 md:grid-cols-2 gap-8 hidden">
-                <!-- Individual Service Card 1 -->
-                <div class="bg-white p-8 rounded-xl shadow-lg border border-[#3E9656]/10 hover:shadow-xl hover:border-[#3E9656]/30 transition-all">
-                    <!-- Icon Placeholder -->
-                    <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
-                        <div class="w-8 h-8 rounded-full bg-[#3E9656] flex items-center justify-center">
-                            <span class="text-white text-sm font-bold">PA</span>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-[#2d7040] mb-4">Personal AI Agents</h3>
-                    <p class="text-gray-600 mb-6">
-                        Stop wasting time on repetitive tasks. Our custom AI agents can handle email management, research, data entry, scheduling, and more—giving you back hours in your day.
-                    </p>
-                    
-                </div>
-
-                <!-- Individual Service Card 2 -->
-                <div class="bg-white p-8 rounded-xl shadow-lg border border-[#3E9656]/10 hover:shadow-xl hover:border-[#3E9656]/30 transition-all">
-                    <!-- Icon Placeholder -->
-                    <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
-                        <div class="w-8 h-8 rounded-full bg-[#3E9656] flex items-center justify-center">
-                            <span class="text-white text-sm font-bold">SR</span>
-                        </div>
-                    </div>
-                    <h3 class="text-xl font-bold text-[#2d7040] mb-4">Study & Research Assistants</h3>
-                    <p class="text-gray-600 mb-6">
-                        Accelerate your academic journey with AI tools that help organize research, generate study materials, provide feedback on assignments, and streamline your learning process.
-                    </p>
-                    <!-- Commented out Learn more link
-                    <a href="#" class="inline-flex items-center text-[#3E9656] font-medium hover:underline">
-                        Learn more 
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </a>
-                    -->
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How We Work Section -->
-    <section id="how-we-work" class="py-24 bg-gradient-to-b from-white to-[#f0f8f3]">
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
-            <!-- Section Header -->
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">How We Work</h2>
-                <div class="w-20 h-1 bg-[#3E9656] mx-auto"></div>
-                <p class="mt-6 max-w-2xl mx-auto text-gray-600">
-                    Our process is designed to deliver results through collaboration and expertise
-                </p>
-            </div>
-
-            <!-- Process Timeline -->
-            <div class="relative max-w-5xl mx-auto">
-                <!-- Vertical Line -->
-                <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-[#3E9656]/20 hidden md:block"></div>
-                
-                <!-- Step 1: Discovery -->
-                <div class="flex flex-col md:flex-row items-center mb-24 relative">
-                    <!-- Step Number Mobile -->
-                    <div class="flex md:hidden w-12 h-12 rounded-full bg-[#3E9656] text-white text-xl font-bold items-center justify-center mb-4">
-                        1
-                    </div>
-                    
-                    <!-- Left Content (odd steps) -->
-                    <div class="w-full md:w-1/2 md:pr-16 text-center md:text-right">
-                        <h3 class="text-2xl font-bold text-[#2d7040] mb-3">Discovery</h3>
-                        <p class="text-gray-600">
-                            We start by understanding your goals, challenges, and current data landscape.
-                        </p>
-                    </div>
-                    
-                    <!-- Center Circle (desktop) -->
-                    <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full bg-white border-4 border-[#3E9656] items-center justify-center z-10">
-                        <div class="w-10 h-10 rounded-full bg-[#3E9656] text-white text-xl font-bold flex items-center justify-center">
-                            1
-                        </div>
-                    </div>
-                    
-                    <!-- Right Content (odd steps) -->
-                    <div class="w-full md:w-1/2 md:pl-16 flex justify-center md:justify-start">
-                        <!-- Icon/Illustration Placeholder -->
-                        <div class="w-32 h-32 mt-6 md:mt-0 bg-[#e0f0e4] rounded-full flex items-center justify-center">
-                            <div class="w-16 h-16 bg-[#3E9656]/20 rounded-full flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Step 2: Strategy -->
-                <div class="flex flex-col md:flex-row-reverse items-center mb-24 relative">
-                    <!-- Step Number Mobile -->
-                    <div class="flex md:hidden w-12 h-12 rounded-full bg-[#3E9656] text-white text-xl font-bold items-center justify-center mb-4">
-                        2
-                    </div>
-                    
-                    <!-- Right Content (even steps) -->
-                    <div class="w-full md:w-1/2 md:pl-16 text-center md:text-left">
-                        <h3 class="text-2xl font-bold text-[#2d7040] mb-3">Strategy</h3>
-                        <p class="text-gray-600">
-                            Together, we develop a roadmap that aligns technology solutions with your objectives.
-                        </p>
-                    </div>
-                    
-                    <!-- Center Circle (desktop) -->
-                    <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full bg-white border-4 border-[#3E9656] items-center justify-center z-10">
-                        <div class="w-10 h-10 rounded-full bg-[#3E9656] text-white text-xl font-bold flex items-center justify-center">
-                            2
-                        </div>
-                    </div>
-                    
-                    <!-- Left Content (even steps) -->
-                    <div class="w-full md:w-1/2 md:pr-16 flex justify-center md:justify-end">
-                        <!-- Icon/Illustration Placeholder -->
-                        <div class="w-32 h-32 mt-6 md:mt-0 bg-[#e0f0e4] rounded-full flex items-center justify-center">
-                            <div class="w-16 h-16 bg-[#3E9656]/20 rounded-full flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Step 3: Implementation -->
-                <div class="flex flex-col md:flex-row items-center mb-24 relative">
-                    <!-- Step Number Mobile -->
-                    <div class="flex md:hidden w-12 h-12 rounded-full bg-[#3E9656] text-white text-xl font-bold items-center justify-center mb-4">
-                        3
-                    </div>
-                    
-                    <!-- Left Content (odd steps) -->
-                    <div class="w-full md:w-1/2 md:pr-16 text-center md:text-right">
-                        <h3 class="text-2xl font-bold text-[#2d7040] mb-3">Implementation</h3>
-                        <p class="text-gray-600">
-                            Our team builds and integrates custom solutions designed for your specific needs.
-                        </p>
-                    </div>
-                    
-                    <!-- Center Circle (desktop) -->
-                    <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full bg-white border-4 border-[#3E9656] items-center justify-center z-10">
-                        <div class="w-10 h-10 rounded-full bg-[#3E9656] text-white text-xl font-bold flex items-center justify-center">
-                            3
-                        </div>
-                    </div>
-                    
-                    <!-- Right Content (odd steps) -->
-                    <div class="w-full md:w-1/2 md:pl-16 flex justify-center md:justify-start">
-                        <!-- Icon/Illustration Placeholder -->
-                        <div class="w-32 h-32 mt-6 md:mt-0 bg-[#e0f0e4] rounded-full flex items-center justify-center">
-                            <div class="w-16 h-16 bg-[#3E9656]/20 rounded-full flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Step 4: Optimization -->
-                <div class="flex flex-col md:flex-row-reverse items-center relative">
-                    <!-- Step Number Mobile -->
-                    <div class="flex md:hidden w-12 h-12 rounded-full bg-[#3E9656] text-white text-xl font-bold items-center justify-center mb-4">
-                        4
-                    </div>
-                    
-                    <!-- Right Content (even steps) -->
-                    <div class="w-full md:w-1/2 md:pl-16 text-center md:text-left">
-                        <h3 class="text-2xl font-bold text-[#2d7040] mb-3">Optimization</h3>
-                        <p class="text-gray-600">
-                            We continuously monitor, measure, and refine our solutions to maximize their impact.
-                        </p>
-                    </div>
-                    
-                    <!-- Center Circle (desktop) -->
-                    <div class="hidden md:flex absolute left-1/2 transform -translate-x-1/2 w-16 h-16 rounded-full bg-white border-4 border-[#3E9656] items-center justify-center z-10">
-                        <div class="w-10 h-10 rounded-full bg-[#3E9656] text-white text-xl font-bold flex items-center justify-center">
-                            4
-                        </div>
-                    </div>
-                    
-                    <!-- Left Content (even steps) -->
-                    <div class="w-full md:w-1/2 md:pr-16 flex justify-center md:justify-end">
-                        <!-- Icon/Illustration Placeholder -->
-                        <div class="w-32 h-32 mt-6 md:mt-0 bg-[#e0f0e4] rounded-full flex items-center justify-center">
-                            <div class="w-16 h-16 bg-[#3E9656]/20 rounded-full flex items-center justify-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <script>
+        // Countdown Timer
+        const countdownDate = new Date("2025-04-13T00:00:00"); // Fixed launch date: April 13, 2025
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = countdownDate - now;
             
-            <!-- CTA Button -->
-            <div class="text-center mt-20">
-                <a href="#contact" class="px-10 py-3 rounded-full bg-gradient-to-r from-[#2d7040] via-[#3E9656] to-[#4fad69]
-                text-white inline-flex items-center gap-2 hover:shadow-lg hover:shadow-[#3E9656]/30 transition-shadow">
-                    Start your journey 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Case Studies Section -->
-    <section id="projects" class="py-24 bg-white">
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
-            <!-- Section Header -->
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Case Studies</h2>
-                <div class="w-20 h-1 bg-[#3E9656] mx-auto"></div>
-                <p class="mt-6 max-w-2xl mx-auto text-gray-600">
-                    See how our data solutions are creating real-world impact for organizations and individuals
-                </p>
-            </div>
-
-            <!-- Case Study Tabs -->
-            <div class="flex justify-center mb-12">
-                <div class="p-1 bg-[#e0f0e4] rounded-full inline-flex">
-                    <button id="businessCaseTab" class="px-6 py-3 rounded-full bg-[#3E9656] text-white font-medium focus:outline-none transition-all">
-                        Business Success
-                    </button>
-                    <button id="individualCaseTab" class="px-6 py-3 rounded-full text-[#3E9656] font-medium focus:outline-none transition-all">
-                        Individual Success
-                    </button>
-                </div>
-            </div>
-
-            <!-- Business Case Studies -->
-            <div id="businessCaseContent" class="max-w-5xl mx-auto">
-                <!-- Case Study Card with Visual Timeline -->
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-[#3E9656]/10">
-                    <!-- Header with Background -->
-                    <div class="bg-gradient-to-r from-[#2d7040]/90 to-[#3E9656]/90 p-8 relative">
-                        <div class="absolute top-0 left-0 w-full h-full opacity-10">
-                            <!-- Pattern/Image Placeholder -->
-                            <div class="w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJ3aGl0ZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMzYgMzRoLTJWMTZoLTJ2MkgxNnYyaDE2djE0em0tMjAgNC0xLjQxLTEuNDFMMCAxNi4xN2wxLjQxLTEuNDJMMTYuMTcgMGwxLjQyIDEuNDFMMzguNTggMTZsMTQuMjUgMTQuMjUtMTQuNDEgMTQuNDFMMTYgMTYuNDJsMTguOTkgMTguOTktMS40MSAxLjQxLTE0LTEzLjk5TDQgMzYuNGwxMC41OSAxMC42IDEzLjk5IDE0IDEzLjk5LTE0IDEwLjU5LTEwLjU5LTEzLjk5LTE0LTEuNDEtMS40MXoiLz48L2c+PC9zdmc+')]"></div>
-                        </div>
-                        <h3 class="text-white text-2xl md:text-3xl font-bold relative z-10">Marketing Agency Data Integration</h3>
-                        <p class="text-white/80 mt-2 relative z-10 text-lg">A mid-sized marketing agency's journey to data efficiency</p>
-                    </div>
-                    
-                    <!-- Case Study Content -->
-                    <div class="p-8">
-                        <div class="flex flex-col md:flex-row gap-6 md:gap-10">
-                            <!-- Left Column: Challenge, Solution, Results -->
-                            <div class="w-full md:w-2/3">
-                                <!-- Challenge -->
-                                <div class="mb-8">
-                                    <div class="flex items-center mb-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#3E9656]/10 flex items-center justify-center mr-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
-                                        </div>
-                                        <h4 class="text-xl font-bold text-gray-800">Challenge</h4>
-                                    </div>
-                                    <p class="text-gray-600 pl-13">
-                                        A mid-sized marketing agency was drowning in client data spread across multiple platforms.
-                                    </p>
-                                </div>
-                                
-                                <!-- Solution -->
-                                <div class="mb-8">
-                                    <div class="flex items-center mb-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#3E9656]/10 flex items-center justify-center mr-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                            </svg>
-                                        </div>
-                                        <h4 class="text-xl font-bold text-gray-800">Solution</h4>
-                                    </div>
-                                    <p class="text-gray-600">
-                                        DAI implemented a centralized data pipeline and custom dashboard system that automated reporting and surfaced actionable insights.
-                                    </p>
-                                </div>
-                                
-                                <!-- Results -->
-                                <div>
-                                    <div class="flex items-center mb-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#3E9656]/10 flex items-center justify-center mr-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                            </svg>
-                                        </div>
-                                        <h4 class="text-xl font-bold text-gray-800">Results</h4>
-                                    </div>
-                                    <p class="text-gray-600 mb-4">
-                                        Our solution delivered measurable improvements across key business metrics:
-                                    </p>
-                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
-                                        <div class="bg-[#f0f8f3] p-4 rounded-lg border border-[#3E9656]/10 text-center">
-                                            <div class="text-[#3E9656] text-3xl font-bold mb-1">67%</div>
-                                            <div class="text-gray-700 text-sm">Reduction in reporting time</div>
-                                        </div>
-                                        <div class="bg-[#f0f8f3] p-4 rounded-lg border border-[#3E9656]/10 text-center">
-                                            <div class="text-[#3E9656] text-3xl font-bold mb-1">23%</div>
-                                            <div class="text-gray-700 text-sm">Increase in client retention</div>
-                                        </div>
-                                        <div class="bg-[#f0f8f3] p-4 rounded-lg border border-[#3E9656]/10 text-center">
-                                            <div class="text-[#3E9656] font-bold mb-1 text-3xl">New</div>
-                                            <div class="text-gray-700 text-sm">Revenue streams created</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Right Column: Visualization Placeholder -->
-                            <div class="w-full md:w-1/3 flex items-center justify-center">
-                                <div class="w-full h-80 bg-[#e0f0e4] rounded-lg flex items-center justify-center border border-[#3E9656]/20">
-                                    <div class="text-center p-4">
-                                        <img src="images/marketeam.png" alt="Marketing Team Data Dashboard" class="w-full h-auto rounded-lg object-cover">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Individual Case Studies (Initially Hidden) -->
-            <div id="individualCaseContent" class="max-w-5xl mx-auto hidden">
-                <!-- Case Study Card -->
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-[#3E9656]/10">
-                    <!-- Header with Background -->
-                    <div class="bg-gradient-to-r from-[#2d7040]/90 to-[#3E9656]/90 p-8 relative">
-                        <div class="absolute top-0 left-0 w-full h-full opacity-10">
-                            <!-- Pattern/Image Placeholder -->
-                            <div class="w-full h-full bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJ3aGl0ZSIgZmlsbC1ydWxlPSJldmVub2RkIj48cGF0aCBkPSJNMzYgMzRoLTJWMTZoLTJ2MkgxNnYyaDE2djE0em0tMjAgNC0xLjQxLTEuNDFMMCAxNi4xN2wxLjQxLTEuNDJMMTYuMTcgMGwxLjQyIDEuNDFMMzguNTggMTZsMTQuMjUgMTQuMjUtMTQuNDEgMTQuNDFMMTYgMTYuNDJsMTguOTkgMTguOTktMS40MSAxLjQxLTE0LTEzLjk5TDQgMzYuNGwxMC41OSAxMC42IDEzLjk5IDE0IDEzLjk5LTE0IDEwLjU5LTEwLjU5LTEzLjk5LTE0LTEuNDEtMS40MXoiLz48L2c+PC9zdmc+')]"></div>
-                        </div>
-                        <h3 class="text-white text-2xl md:text-3xl font-bold relative z-10">PhD Research Assistant</h3>
-                        <p class="text-white/80 mt-2 relative z-10 text-lg">Accelerating academic research with AI</p>
-                    </div>
-                    
-                    <!-- Case Study Content -->
-                    <div class="p-8">
-                        <div class="flex flex-col md:flex-row gap-6 md:gap-10">
-                            <!-- Left Column: Challenge, Solution, Results -->
-                            <div class="w-full md:w-2/3">
-                                <!-- Challenge -->
-                                <div class="mb-8">
-                                    <div class="flex items-center mb-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#3E9656]/10 flex items-center justify-center mr-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                                            </svg>
-                                        </div>
-                                        <h4 class="text-xl font-bold text-gray-800">Challenge</h4>
-                                    </div>
-                                    <p class="text-gray-600 pl-13">
-                                        A PhD candidate needed to process thousands of research papers for their dissertation.
-                                    </p>
-                                </div>
-                                
-                                <!-- Solution -->
-                                <div class="mb-8">
-                                    <div class="flex items-center mb-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#3E9656]/10 flex items-center justify-center mr-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                            </svg>
-                                        </div>
-                                        <h4 class="text-xl font-bold text-gray-800">Solution</h4>
-                                    </div>
-                                    <p class="text-gray-600">
-                                        We created a personalized AI research assistant that could summarize papers, extract key findings, and identify patterns across the literature.
-                                    </p>
-                                </div>
-                                
-                                <!-- Results -->
-                                <div>
-                                    <div class="flex items-center mb-3">
-                                        <div class="w-10 h-10 rounded-full bg-[#3E9656]/10 flex items-center justify-center mr-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                                            </svg>
-                                        </div>
-                                        <h4 class="text-xl font-bold text-gray-800">Results</h4>
-                                    </div>
-                                    <p class="text-gray-600 mb-4">
-                                        The AI research assistant delivered significant time savings and quality improvements:
-                                    </p>
-                                    <div class="bg-[#f0f8f3] p-6 rounded-lg border border-[#3E9656]/10">
-                                        <div class="flex flex-col sm:flex-row items-center gap-6">
-                                            <div class="text-center">
-                                                <div class="text-[#3E9656] text-4xl font-bold mb-1">4</div>
-                                                <div class="text-gray-700 font-medium">Months saved</div>
-                                            </div>
-                                            <div class="hidden sm:block w-px h-16 bg-[#3E9656]/20"></div>
-                                            <div class="text-gray-700">
-                                                Research process accelerated by 4 months, allowing for more comprehensive analysis and stronger conclusions.
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-6 flex flex-col sm:flex-row gap-4">
-                                        <div class="bg-[#f0f8f3] p-4 rounded-lg border border-[#3E9656]/10 flex-1 text-center">
-                                            <div class="text-[#3E9656] text-2xl font-bold mb-1">1000+</div>
-                                            <div class="text-gray-700 text-sm">Papers processed</div>
-                                        </div>
-                                        <div class="bg-[#f0f8f3] p-4 rounded-lg border border-[#3E9656]/10 flex-1 text-center">
-                                            <div class="text-[#3E9656] text-2xl font-bold mb-1">85%</div>
-                                            <div class="text-gray-700 text-sm">More sources cited</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Right Column: Visualization Placeholder -->
-                            <div class="w-full md:w-1/3 flex items-center justify-center">
-                                <div class="w-full h-80 bg-[#e0f0e4] rounded-lg flex items-center justify-center border border-[#3E9656]/20">
-                                    <div class="text-center p-4">
-                                        <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-[#3E9656]/20 flex items-center justify-center">
-                                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                                            </svg>
-                                        </div>
-                                        <p class="text-[#3E9656] text-sm">
-                                            [PLACEHOLDER]
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Clients Section -->
-    <section id="clients" class="py-20 bg-[#f8fdf9]">
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
-            <!-- Section Header -->
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Our Clients</h2>
-                <div class="w-20 h-1 bg-[#3E9656] mx-auto"></div>
-                <p class="mt-6 max-w-2xl mx-auto text-gray-600">
-                    Trusted by organizations
-                </p>
-            </div>
-
-            <!-- Client Logos - Single Row -->
-            <div class="py-8">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-8 items-center max-w-4xl mx-auto">
-                    <!-- Client Logo 1 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center h-32 border border-gray-100 hover:shadow-md transition-shadow hover:border-[#3E9656]/30">
-                        <img src="images/company1.png" alt="Client 1" class="max-h-full max-w-full object-contain">
-                    </div>
-                    
-                    <!-- Client Logo 2 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center h-32 border border-gray-100 hover:shadow-md transition-shadow hover:border-[#3E9656]/30">
-                        <img src="images/company2.png" alt="Client 2" class="max-h-full max-w-full object-contain">
-                    </div>
-                    
-                    <!-- Client Logo 3 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center h-32 border border-gray-100 hover:shadow-md transition-shadow hover:border-[#3E9656]/30">
-                        <img src="images/company3.png" alt="Client 3" class="max-h-full max-w-full object-contain">
-                    </div>
-                    
-                    <!-- Client Logo 4 -->
-                    <div class="bg-white rounded-lg shadow-sm p-6 flex items-center justify-center h-32 border border-gray-100 hover:shadow-md transition-shadow hover:border-[#3E9656]/30">
-                        <img src="images/company4.png" alt="Client 4" class="max-h-full max-w-full object-contain">
-                    </div>
-                </div>
-            </div>
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
             
-            <!-- Client Testimonial -->
-            <div class="mt-16 bg-white rounded-xl shadow-md p-8 md:p-10 max-w-4xl mx-auto border border-[#3E9656]/10 relative">
-                <!-- Testimonial Carousel Container -->
-                <div id="testimonialCarousel" class="relative">
-                    <!-- Testimonial Slides -->
-                    <div class="testimonial-slides overflow-hidden">
-                        <!-- Testimonial 1 - Ventpods -->
-                        <div class="testimonial-slide active">
-                            <div class="flex flex-col items-center text-center">
-                                <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                    </svg>
-                                </div>
-                                
-                                <blockquote class="text-xl md:text-2xl text-gray-700 italic mb-6">
-                                    "DAI's expertise in AI and data engineering was crucial for Ventpods. They helped us build a sophisticated therapist chatbot and recommendation system that ensures users find the most relevant mental health support. Their solution has significantly improved user engagement and satisfaction."
-                                </blockquote>
-                                
-                                <div class="flex items-center flex-col">
-                                    <div class="w-12 h-12 bg-[#e0f0e4] rounded-full flex items-center justify-center mb-2">
-                                        <span class="text-[#3E9656] font-bold">ET</span>
-                                    </div>
-                                    <div class="text-gray-900 font-medium">Eze T</div>
-                                    <div class="text-gray-500 text-sm">Chief Technical Officer, Ventpods</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Testimonial 2 -->
-                        <div class="testimonial-slide hidden">
-                            <div class="flex flex-col items-center text-center">
-                                <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                    </svg>
-                                </div>
-                                
-                                <blockquote class="text-xl md:text-2xl text-gray-700 italic mb-6">
-                                    "Working with DAI transformed our academic research capabilities. Their custom AI solution helped us analyze thousands of scientific papers, cutting our research time by more than half while actually improving the comprehensiveness of our literature review."
-                                </blockquote>
-                                
-                                <div class="flex items-center flex-col">
-                                    <div class="w-12 h-12 bg-[#e0f0e4] rounded-full flex items-center justify-center mb-2">
-                                        <span class="text-[#3E9656] font-bold">JD</span>
-                                    </div>
-                                    <div class="text-gray-900 font-medium">Dr. Jude</div>
-                                    <div class="text-gray-500 text-sm">Fanshawe College</div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Testimonial 3 -->
-                        <div class="testimonial-slide hidden">
-                            <div class="flex flex-col items-center text-center">
-                                <div class="w-16 h-16 bg-[#3E9656]/10 rounded-full flex items-center justify-center mb-6">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                    </svg>
-                                </div>
-                                
-                                <blockquote class="text-xl md:text-2xl text-gray-700 italic mb-6">
-                                    "DAI helped us automate our entire reporting workflow. What used to take our team three days each month now happens automatically in minutes. The insights provided by their custom dashboard have helped us identify new revenue opportunities we were completely missing before."
-                                </blockquote>
-                                
-                                <div class="flex items-center flex-col">
-                                    <div class="w-12 h-12 bg-[#e0f0e4] rounded-full flex items-center justify-center mb-2">
-                                        <span class="text-[#3E9656] font-bold">MJ</span>
-                                    </div>
-                                    <div class="text-gray-900 font-medium">Michael J.</div>
-                                    <div class="text-gray-500 text-sm">Operations Manager, GreenTech Solutions</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Navigation Arrows -->
-                    <button class="absolute top-1/2 -left-4 transform -translate-y-1/2 bg-white hover:bg-[#3E9656]/10 rounded-full p-2 shadow-md focus:outline-none transition-colors z-10" id="prevTestimonial">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                        </svg>
-                    </button>
-                    
-                    <button class="absolute top-1/2 -right-4 transform -translate-y-1/2 bg-white hover:bg-[#3E9656]/10 rounded-full p-2 shadow-md focus:outline-none transition-colors z-10" id="nextTestimonial">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
-
-                    <!-- Indicator Dots -->
-                    <div class="flex justify-center mt-8 space-x-2">
-                        <button class="w-3 h-3 rounded-full bg-[#3E9656] indicator-dot active" data-index="0"></button>
-                        <button class="w-3 h-3 rounded-full bg-[#3E9656]/30 indicator-dot" data-index="1"></button>
-                        <button class="w-3 h-3 rounded-full bg-[#3E9656]/30 indicator-dot" data-index="2"></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="py-24 bg-white">
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
-            <!-- Section Header -->
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-800 mb-4">Contact Us</h2>
-                <div class="w-20 h-1 bg-[#3E9656] mx-auto"></div>
-                <p class="mt-6 max-w-2xl mx-auto text-gray-600">
-                    Ready to transform your relationship with data? Chat with our AI assistant to discover the perfect solution for your needs.
-                </p>
-            </div>
-
-            <!-- Chat Interface Card -->
-            <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg border border-[#3E9656]/10 overflow-hidden">
-                <div class="flex flex-col md:flex-row">
-                    <!-- Contact Info -->
-                    <div class="bg-gradient-to-br from-[#3E9656] to-[#2d7040] text-white p-8 md:p-10 md:w-2/5">
-                        <h3 class="text-xl font-bold mb-6">Get in Touch</h3>
-                        
-                        <div class="space-y-6">
-                            <div class="flex items-start">
-                                <div class="mr-4 mt-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-semibold text-white/90 mb-1">Email</h4>
-                                    <p class="text-white/80">hello@dai-solutions.com</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start">
-                                <div class="mr-4 mt-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-semibold text-white/90 mb-1">Location</h4>
-                                    <p class="text-white/80">San Francisco, CA</p>
-                                </div>
-                            </div>
-                            
-                            <div class="flex items-start">
-                                <div class="mr-4 mt-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-semibold text-white/90 mb-1">Working Hours</h4>
-                                    <p class="text-white/80">Mon - Fri: 9AM - 5PM PST</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-8">
-                            <div class="p-4 bg-white/10 rounded-lg">
-                                <h4 class="text-sm font-semibold text-white mb-2">How our AI Assistant helps:</h4>
-                                <ul class="text-white/80 text-sm space-y-2">
-                                    <li class="flex items-start">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        <span>Understand your business needs</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        <span>Recommend tailored AI solutions</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                                        </svg>
-                                        <span>Answer your questions in real-time</span>
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Chat Interface -->
-                    <div class="p-8 md:p-10 md:w-3/5 flex flex-col">
-                        <h3 class="text-xl font-bold text-gray-800 mb-6">AI Assistant</h3>
-                        
-                        <!-- User Details Form (Initially Visible) -->
-                        <div id="userDetailsForm" class="space-y-6">
-                            <p class="text-gray-600">Please provide your details to get started with our AI assistant.</p>
-                            
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="chat-name" class="block text-sm font-medium text-gray-700 mb-1">Full Name <span class="text-red-500">*</span></label>
-                                    <input type="text" id="chat-name" required class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3E9656]/50 focus:border-[#3E9656]" placeholder="Your full name">
-                                </div>
-                                
-                                <div>
-                                    <label for="chat-email" class="block text-sm font-medium text-gray-700 mb-1">Email Address <span class="text-red-500">*</span></label>
-                                    <input type="email" id="chat-email" required pattern="[^@\s]+@[^@\s]+\.[^@\s]+" title="Please enter a valid email address" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#3E9656]/50 focus:border-[#3E9656]" placeholder="you@example.com">
-                                    <p class="text-xs text-gray-500 mt-1">We'll use this to follow up with you if needed.</p>
-                                </div>
-                            </div>
-                            
-                            <div>
-                                <button id="startChatBtn" class="w-full py-3 px-6 rounded-md bg-gradient-to-r from-[#2d7040] via-[#3E9656] to-[#4fad69] text-white font-medium hover:shadow-lg hover:shadow-[#3E9656]/30 transition-shadow">
-                                    Start Chat
-                                </button>
-                                <p class="text-xs text-gray-500 mt-2 text-center">By starting the chat, you'll be connected to our AI assistant via a secure connection.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Chat Interface (Initially Hidden) -->
-                        <div id="chatInterface" class="h-full flex flex-col" style="display: none;">
-                            <!-- Connection Status -->
-                            <div id="connectionStatus" class="mb-3 text-sm text-center">
-                                <span class="inline-flex items-center">
-                                    <span class="animate-pulse w-3 h-3 rounded-full bg-yellow-500 mr-2"></span>
-                                    Connecting to AI assistant...
-                                </span>
-                            </div>
-                            
-                            <!-- Chat Messages Area -->
-                            <div id="chatMessages" class="flex-1 overflow-y-auto mb-4 border border-gray-200 rounded-lg p-4 h-80 space-y-4">
-                                <!-- Initial AI Message will be added once connected -->
-                            </div>
-                            
-                            <!-- Chat Input Area -->
-                            <div class="chat-input-area mt-auto">
-                                <div class="flex items-center">
-                                    <input type="text" id="chatInput" placeholder="Type your message..." class="flex-1 px-4 py-3 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#3E9656]/50 focus:border-[#3E9656]" disabled>
-                                    <button id="sendMessageBtn" class="px-6 py-3 bg-[#3E9656] text-white rounded-r-md hover:bg-[#2d7040] transition-colors disabled:opacity-50 disabled:cursor-not-allowed" disabled>
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer with updated color scheme -->
-    <footer class="bg-[#f0f8f3] border-t border-[#3E9656]/20 py-12">
-        <div class="container mx-auto px-4 md:px-8 lg:px-16">
-            <div class="flex flex-col md:flex-row justify-between items-center">
-                <div class="mb-6 md:mb-0">
-                    <img src="images/logo.png" alt="DAI Logo" class="w-28 mb-4">
-                    <p class="text-gray-600 max-w-xs">
-                        Transforming data into actionable intelligence for businesses and individuals.
-                    </p>
-                </div>
-                
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
-                    <div>
-                        <h4 class="text-lg font-semibold text-[#2d7040] mb-4">Quick Links</h4>
-                        <ul class="space-y-2">
-                            <li><a href="#home" class="text-gray-600 hover:text-[#3E9656] transition">Home</a></li>
-                            <li><a href="#about" class="text-gray-600 hover:text-[#3E9656] transition">About</a></li>
-                            <li><a href="#services" class="text-gray-600 hover:text-[#3E9656] transition">Services</a></li>
-                            <li><a href="#projects" class="text-gray-600 hover:text-[#3E9656] transition">Case Studies</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div>
-                        <h4 class="text-lg font-semibold text-[#2d7040] mb-4">Services</h4>
-                        <ul class="space-y-2">
-                            <li><a href="#" class="text-gray-600 hover:text-[#3E9656] transition">Custom AI Solutions</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#3E9656] transition">Data Engineering</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#3E9656] transition">Workflow Automation</a></li>
-                            <li><a href="#" class="text-gray-600 hover:text-[#3E9656] transition">Research Assistants</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="col-span-2 md:col-span-1">
-                        <h4 class="text-lg font-semibold text-[#2d7040] mb-4">Contact</h4>
-                        <ul class="space-y-2">
-                            <li class="flex items-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                                <span class="text-gray-600">hello@dai-solutions.com</span>
-                            </li>
-                            <li class="flex items-start">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-[#3E9656]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                                </svg>
-                                <span class="text-gray-600">San Francisco, CA</span>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
+            document.getElementById("days").innerText = days.toString().padStart(2, '0');
+            document.getElementById("hours").innerText = hours.toString().padStart(2, '0');
+            document.getElementById("minutes").innerText = minutes.toString().padStart(2, '0');
+            document.getElementById("seconds").innerText = seconds.toString().padStart(2, '0');
             
-            <div class="border-t border-[#3E9656]/20 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
-                <p class="text-gray-600">© 2025 Data Assisted Intelligence. All rights reserved.</p>
-                
-                <div class="flex space-x-6 mt-4 md:mt-0">
-                    <a href="#" class="text-[#3E9656] hover:text-[#2d7040] transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" />
-                        </svg>
-                    </a>
-                    <a href="#" class="text-[#3E9656] hover:text-[#2d7040] transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-                        </svg>
-                    </a>
-                    <a href="#" class="text-[#3E9656] hover:text-[#2d7040] transition">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </footer>
+            if (distance < 0) {
+                clearInterval(countdownTimer);
+                document.getElementById("days").innerText = "00";
+                document.getElementById("hours").innerText = "00";
+                document.getElementById("minutes").innerText = "00";
+                document.getElementById("seconds").innerText = "00";
+            }
+        }
+        
+        const countdownTimer = setInterval(updateCountdown, 1000);
+        updateCountdown(); // Initial call
 
-    <!-- JavaScript -->
-    <script src="script.js"></script>
+        // Newsletter form submission
+        document.getElementById('newsletter-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const messageElement = document.getElementById('form-message');
+            
+            try {
+                const response = await fetch('https://dai-temp.onrender.com/subscribe', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email }),
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Show success message
+                    messageElement.textContent = 'Thank you! You\'ve been added to our notification list.';
+                    messageElement.className = 'mt-2 text-sm text-center text-green-600';
+                    document.getElementById('email').value = '';
+                } else {
+                    // Show error message
+                    messageElement.textContent = result.detail || 'Something went wrong. Please try again.';
+                    messageElement.className = 'mt-2 text-sm text-center text-red-600';
+                }
+            } catch (error) {
+                // Show error message for network errors
+                messageElement.textContent = 'Connection error. Please try again later.';
+                messageElement.className = 'mt-2 text-sm text-center text-red-600';
+            }
+            
+            messageElement.classList.remove('hidden');
+        });
+    </script>
 </body>
 </html>
