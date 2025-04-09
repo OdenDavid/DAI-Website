@@ -289,25 +289,30 @@ async def websocket_endpoint(websocket: WebSocket):
                 # Log what we're sending to OpenAI (excluding system message for brevity)
                 logger.info(f"Sending to OpenAI: User message: {last_user_message.get('content', 'No content')}")
                 
-                # Call OpenAI API
-                response = client.chat.completions.create(
+                # Initialize full response for storage
+                full_response = ""
+                
+                # Stream the response from OpenAI
+                stream = client.chat.completions.create(
                     model="gpt-4o",
                     messages=full_message_history,
+                    stream=True
                 )
                 
-                # Extract and send the assistant's reply
-                assistant_reply = response.choices[0].message.content
-                logger.info(f"Received response from OpenAI: {assistant_reply[:50]}...")  # Log first 50 chars
+                # Stream each chunk to the client
+                for chunk in stream:
+                    if chunk.choices[0].delta.content is not None:
+                        content = chunk.choices[0].delta.content
+                        full_response += content
+                        await websocket.send_text(content)
                 
-                # Add the assistant's reply to our stored messages
+                # Add the complete response to our stored messages
                 client_data[client_id]["messages"].append({
                     "role": "assistant",
-                    "content": assistant_reply
+                    "content": full_response
                 })
                 
-                # Send the response back to the client
-                await websocket.send_text(assistant_reply)
-                logger.info("Sent response to client")
+                logger.info("Finished streaming response to client")
                 
             except json.JSONDecodeError:
                 logger.error("Failed to decode JSON from client")
