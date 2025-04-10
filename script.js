@@ -14,6 +14,11 @@ let chatInput = null;
 let sendMessageBtn = null;
 let chatMessages = null;
 let connectionStatus = null;
+let lastUserActivity = Date.now();
+const inactivityTimeout = 15 * 60 * 1000; // 15 minutes in milliseconds
+let inactivityTimer = null;
+let inactivityWarningTimer = null; // New timer for warning
+const inactivityWarningTime = 14 * 60 * 1000; // 14 minutes (1 minute before disconnect)
 
 // Reconnection variables
 let reconnectAttempts = 0;
@@ -574,22 +579,46 @@ function initializeWebSocket() {
             reconnectAttempts = 0; // Reset reconnect counter on successful connection
             updateConnectionStatus('connected', true);
             
+            // Get user metadata from the form if available
+            const userName = document.getElementById('user-name')?.value || 
+                             document.getElementById('chat-name')?.value || 
+                             'Unknown';
+            
+            const userEmail = document.getElementById('user-email')?.value || 
+                              document.getElementById('chat-email')?.value || 
+                              'Unknown';
+            
+            // Add user metadata to the first message
+            const userMetadata = {
+                name: userName,
+                email: userEmail
+            };
+            
             // Send the message history immediately to initiate the conversation
             if (messageHistory.length > 0) {
-                console.log('Sending initial message history:', messageHistory);
+                console.log('Sending initial message history with user metadata:', messageHistory);
                 try {
-                    // Ensure proper JSON formatting
-                    socket.send(JSON.stringify(messageHistory));
+                    // Ensure proper JSON formatting with metadata
+                    socket.send(JSON.stringify({
+                        messages: messageHistory,
+                        metadata: userMetadata
+                    }));
                 } catch (err) {
                     console.error('Error sending initial message:', err);
                 }
             }
             
+            // Set up inactivity tracking
+            setupActivityTracking();
+            
             // Set up a ping interval to keep the connection alive
             const pingInterval = setInterval(() => {
                 if (socket.readyState === WebSocket.OPEN) {
                     console.log('Sending ping to keep connection alive');
-                    socket.send(JSON.stringify([{ "role": "ping", "content": "ping" }]));
+                    socket.send(JSON.stringify({
+                        type: "ping",
+                        timestamp: Date.now()
+                    }));
                 } else {
                     clearInterval(pingInterval);
                 }
@@ -601,10 +630,50 @@ function initializeWebSocket() {
             const response = event.data;
             console.log('Received message from server:', response);
             
-            // Handle ping response
-            if (response === "pong" || response.includes("ping")) {
-                console.log('Received ping response');
-                return; // Don't display ping responses
+            try {
+                // Try parsing as JSON first
+                const parsedResponse = JSON.parse(response);
+                
+                // Filter out ping/pong messages
+                if (parsedResponse.type === "pong" || parsedResponse.type === "ping") {
+                    console.log('Received ping/pong response, not displaying in chat');
+                    return; // Don't display ping/pong responses
+                }
+                
+                if (parsedResponse.message) {
+                    // This is a structured response with possible metadata
+                    addMessage('ai', parsedResponse.message);
+                    
+                    // Store message in history
+                    messageHistory.push({
+                        "role": "assistant",
+                        "content": parsedResponse.message
+                    });
+                } else if (!parsedResponse.type) {
+                    // Handle plain text response that was JSON but not a ping/pong
+                    addMessage('ai', response);
+                    
+                    // Store message in history
+                    messageHistory.push({
+                        "role": "assistant",
+                        "content": response
+                    });
+                }
+            } catch (e) {
+                // Not JSON or parsing failed, check if it's a plain text ping/pong
+                if (response === "pong" || response.includes("ping")) {
+                    console.log('Received plain ping/pong response');
+                    return; // Don't display ping responses
+                }
+                
+                // Regular message
+                addMessage('ai', response);
+                
+                // Store message in history
+                messageHistory.push({
+                    "role": "assistant",
+                    "content": response
+                });
             }
             
             // Remove typing indicator if it exists
@@ -613,37 +682,15 @@ function initializeWebSocket() {
                 chatMessages.removeChild(typingIndicator);
             }
             
-            // Add more debugging to check what response we're getting
-            console.log('Response type:', typeof response);
-            console.log('Response length:', response.length);
+            // Re-enable input if it was disabled
+            if (chatInput) chatInput.disabled = false;
+            if (sendMessageBtn) sendMessageBtn.disabled = false;
+            if (chatInput) chatInput.focus();
             
-            if (response && response.trim() !== '') {
-                console.log('Adding message to chat UI...');
-                addMessage('ai', response);
-                
-                // Store message in history
-                messageHistory.push({
-                    "role": "assistant",
-                    "content": response
-                });
-                
-                // Re-enable input if it was disabled
-                if (chatInput) chatInput.disabled = false;
-                if (sendMessageBtn) sendMessageBtn.disabled = false;
-                if (chatInput) chatInput.focus();
-                
-                // Scroll to the bottom
-                if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
-                
-                console.log('Message added successfully, UI updated');
-            } else {
-                console.warn('Received empty response from server');
-                addMessage('system', 'The assistant sent an empty response. Please try asking again.');
-                
-                // Re-enable input
-                if (chatInput) chatInput.disabled = false;
-                if (sendMessageBtn) sendMessageBtn.disabled = false;
-            }
+            // Scroll to the bottom
+            if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            console.log('Message added successfully, UI updated');
         });
         
         // Handle errors
@@ -664,7 +711,7 @@ function initializeWebSocket() {
             } else {
                 console.error(`Connection closed unexpectedly with code ${event.code}`);
                 
-                // If the connection was immediately closed or never properly established
+                // If the connection was immediately closed or never established
                 if (reconnectAttempts < maxReconnectAttempts) {
                     reconnectAttempts++;
                     console.log(`Attempting to reconnect (${reconnectAttempts}/${maxReconnectAttempts})`);
@@ -688,6 +735,76 @@ function initializeWebSocket() {
         updateConnectionStatus('error');
         addMessage('system', 'Failed to create connection. Please check your internet connection and try again.');
     }
+}
+
+// Function to initialize the inactivity timer
+function startInactivityTimer() {
+    // Clear any existing timers first
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+    if (inactivityWarningTimer) clearTimeout(inactivityWarningTimer);
+    
+    // Set a warning timer first (1 minute before disconnect)
+    inactivityWarningTimer = setTimeout(() => {
+        console.log('Showing inactivity warning');
+        // Show a warning to the user
+        addMessage('system', 'You have been inactive for some time. Your session will be disconnected in 1 minute due to inactivity. Type a message to stay connected.');
+        // Scroll to bottom to ensure warning is visible
+        if (chatMessages) chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, inactivityWarningTime);
+    
+    // Set the main inactivity timer
+    inactivityTimer = setTimeout(() => {
+        console.log('Closing connection due to inactivity');
+        if (socket && socket.readyState === WebSocket.OPEN) {
+            addMessage('system', 'Connection closed due to inactivity.');
+            socket.close(1000, 'Inactivity timeout');
+        }
+    }, inactivityTimeout);
+}
+
+// Function to reset the inactivity timer
+function resetInactivityTimer() {
+    const now = new Date();
+    const previousActivity = new Date(lastUserActivity);
+    const timeSinceLastActivity = now - previousActivity;
+    
+    // Log activity only if significant time has passed (more than 1 minute)
+    if (timeSinceLastActivity > 60000) {
+        console.log(`User activity detected after ${Math.round(timeSinceLastActivity/1000)} seconds of inactivity`);
+    }
+    
+    lastUserActivity = Date.now();
+    startInactivityTimer();
+    
+    // If we have an open socket connection, send a ping to keep it alive
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        console.log('Sending activity ping to server');
+        socket.send(JSON.stringify({
+            type: "ping",
+            timestamp: Date.now(),
+            isUserActivity: true  // Flag to indicate this is actual user activity
+        }));
+    }
+}
+
+// Add event listeners to track user activity
+function setupActivityTracking() {
+    // Track user input in chat
+    if (chatInput) {
+        chatInput.addEventListener('keydown', resetInactivityTimer);
+    }
+    
+    // Track button clicks
+    if (sendMessageBtn) {
+        sendMessageBtn.addEventListener('click', resetInactivityTimer);
+    }
+    
+    // Track general user activity on the page
+    document.addEventListener('mousedown', resetInactivityTimer);
+    document.addEventListener('touchstart', resetInactivityTimer);
+    
+    // Start the initial timer
+    startInactivityTimer();
 }
 
 // Function to add a message to the chat
@@ -716,6 +833,9 @@ function addMessage(sender, message) {
                 </div>
             `;
         } else if (sender === 'ai') {
+            // Process AI message formatting
+            const formattedMessage = formatAIMessage(message);
+            
             // AI messages stay left-aligned
             messageElement.className = 'flex items-start mb-4';
             messageElement.innerHTML = `
@@ -726,7 +846,7 @@ function addMessage(sender, message) {
                     </svg>
                 </div>
                 <div class="bg-gray-100 dark:bg-gray-700 rounded-lg p-3 max-w-[80%]">
-                    <div class="text-sm text-gray-800 dark:text-gray-200">${message}</div>
+                    <div class="text-sm text-gray-800 dark:text-gray-200 message-content">${formattedMessage}</div>
                 </div>
             `;
         } else if (sender === 'system') {
@@ -750,6 +870,25 @@ function addMessage(sender, message) {
     } catch (error) {
         console.error('Error adding message to chat:', error);
     }
+}
+
+// Function to format AI messages with Markdown-like syntax
+function formatAIMessage(message) {
+    if (!message) return '';
+    
+    let formatted = message;
+    
+    // Handle newlines (convert \n to <br>)
+    formatted = formatted.replace(/\n/g, '<br>');
+    
+    // Handle bold text (**text**)
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    
+    // Handle numbered lists (only for simple formats)
+    formatted = formatted.replace(/(^|\<br\>)(\d+)\.\s(.*?)($|\<br\>)/g, 
+                                  '$1<span class="list-item"><span class="list-number">$2.</span> $3</span>$4');
+    
+    return formatted;
 }
 
 // Function to send a message to the server
@@ -824,9 +963,27 @@ function sendMessage() {
             "content": message
         });
         
-        // Send message history to server
-        console.log('Sending message to server:', messageHistory);
-        socket.send(JSON.stringify(messageHistory));
+        // Get user metadata again in case it was updated
+        const userName = document.getElementById('user-name')?.value || 
+                         document.getElementById('chat-name')?.value || 
+                         'Unknown';
+        
+        const userEmail = document.getElementById('user-email')?.value || 
+                          document.getElementById('chat-email')?.value || 
+                          'Unknown';
+        
+        // Create metadata object
+        const userMetadata = {
+            name: userName,
+            email: userEmail
+        };
+        
+        // Send message with metadata to server
+        console.log('Sending message to server with metadata');
+        socket.send(JSON.stringify({
+            messages: messageHistory,
+            metadata: userMetadata
+        }));
         
         // Clear input
         chatInput.value = '';
