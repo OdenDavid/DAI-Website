@@ -30,8 +30,9 @@ supabase = create_client(supabase_url, supabase_key)
 
 # Dictionary to store user information and chat history per connection
 client_data = {}
-client_last_activity = {}
-INACTIVITY_TIMEOUT = 60  # Temporarily set to 60 seconds (1 minute) for testing
+client_last_activity = {}  # Technical activity (pings, etc.)
+client_last_user_activity = {}  # Only actual user interactions
+INACTIVITY_TIMEOUT = 15 * 60  # 
 app = FastAPI()
 
 origins = ["*"]
@@ -206,6 +207,7 @@ async def websocket_endpoint(websocket: WebSocket):
     
     connected_clients.add(websocket)
     client_last_activity[websocket] = datetime.now()  # Set initial activity timestamp
+    client_last_user_activity[websocket] = datetime.now()  # Set initial user activity timestamp
     
     try:
         while True:
@@ -228,6 +230,22 @@ async def websocket_endpoint(websocket: WebSocket):
                 # Initialize message_history
                 message_history = []
                 
+                # Check if this is a ping message with timestamp or activity_ping
+                is_ping_message = False
+                
+                # Check if this is a ping with isUserActivity flag
+                if isinstance(parsed_data, dict) and parsed_data.get("type") == "ping":
+                    # If this ping has the isUserActivity flag set to true, update user activity
+                    if parsed_data.get("isUserActivity") == True:
+                        client_last_user_activity[websocket] = datetime.now()
+                        logger.info(f"Updated user activity timestamp from explicit activity ping for client {client_id}")
+                    
+                    # This is a ping message with timestamp
+                    logger.debug("Received ping with timestamp, sending pong response")
+                    await websocket.send_text(json.dumps({"type": "pong", "timestamp": parsed_data.get("timestamp")}))
+                    is_ping_message = True
+                    continue
+                
                 # Check if this is the new format with metadata
                 if isinstance(parsed_data, dict) and "metadata" in parsed_data:
                     # Extract metadata and messages separately
@@ -244,14 +262,35 @@ async def websocket_endpoint(websocket: WebSocket):
                     logger.info(f"Received metadata: {metadata}")
                     
                 elif isinstance(parsed_data, dict) and "type" in parsed_data and parsed_data["type"] == "ping":
-                    # This is a ping message with timestamp
-                    logger.debug("Received ping with timestamp, sending pong response")
-                    await websocket.send_text(json.dumps({"type": "pong", "timestamp": parsed_data.get("timestamp")}))
+                    # Already handled above
                     continue
                     
                 else:
                     # Old format without metadata, assume it's just message history
                     message_history = parsed_data
+                
+                # Check if this is a ping message in message format
+                if (len(message_history) == 1 and message_history[0].get("role") == "ping") or \
+                   any(isinstance(msg, dict) and "activity_ping" in str(msg.get("content", "")) for msg in message_history):
+                    logger.debug("Received ping in message format, sending pong response")
+                    await websocket.send_text("pong")
+                    is_ping_message = True
+                    continue
+                
+                # If this is not a ping message, update user activity timestamp
+                if not is_ping_message:
+                    # Only update user activity for real user messages
+                    has_user_message = any(
+                        isinstance(msg, dict) and 
+                        msg.get("role") == "user" and 
+                        msg.get("content") and 
+                        "activity_ping" not in str(msg.get("content", ""))
+                        for msg in message_history
+                    )
+                    
+                    if has_user_message:
+                        client_last_user_activity[websocket] = datetime.now()
+                        logger.info(f"Updated user activity timestamp for client {client_id}")
                 
                 # Filter out ping messages before storing
                 if message_history:
@@ -264,12 +303,6 @@ async def websocket_endpoint(websocket: WebSocket):
                     # Replace client's message history if we have real messages
                     if real_messages:
                         client_data[client_id]["messages"] = real_messages
-                
-                # Check if this is a ping message in message format
-                if len(message_history) == 1 and message_history[0].get("role") == "ping":
-                    logger.debug("Received ping in message format, sending pong response")
-                    await websocket.send_text("pong")
-                    continue
                 
                 # Get the last actual user message for processing (skip ping messages)
                 last_user_message = None
@@ -324,6 +357,8 @@ async def websocket_endpoint(websocket: WebSocket):
         connected_clients.remove(websocket)
         if websocket in client_last_activity:
             del client_last_activity[websocket]
+        if websocket in client_last_user_activity:
+            del client_last_user_activity[websocket]
         if client_id in client_data:
             del client_data[client_id]
 
@@ -340,14 +375,14 @@ async def check_inactive_clients():
         logger.info(f"Checking {total_clients} connected clients for inactivity")
         
         for ws in connected_clients:
-            if ws in client_last_activity:
-                last_active = client_last_activity[ws]
+            if ws in client_last_user_activity:
+                last_active = client_last_user_activity[ws]
                 seconds_inactive = (now - last_active).total_seconds()
                 client_id = id(ws)
                 
                 if seconds_inactive > INACTIVITY_TIMEOUT:
                     inactive_clients.append(ws)
-                    logger.info(f"Found inactive client {client_id} - last active {seconds_inactive:.1f} seconds ago")
+                    logger.info(f"Found inactive client {client_id} - last user activity {seconds_inactive:.1f} seconds ago")
                 else:
                     active_count += 1
                     # Only log detailed info when close to timeout to reduce noise
@@ -380,6 +415,8 @@ async def check_inactive_clients():
                 connected_clients.remove(ws)
                 if ws in client_last_activity:
                     del client_last_activity[ws]
+                if ws in client_last_user_activity:
+                    del client_last_user_activity[ws]
                 if client_id in client_data:
                     del client_data[client_id]
                 logger.info(f"Cleaned up data for inactive client {client_id}")
