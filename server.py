@@ -86,7 +86,7 @@ system_message = {"role": "system",
                     - Their goals or success metrics
                     3. **Suggest relevant DAI services** based on their specific situation
                     4. **Explain the potential benefits** in concrete, measurable terms
-                    5. **Offer to connect them** with the DAI team for a more detailed discussion. Email: hello@dai-solutions.com, Location: San Francisco, CA, Working Hours: Mon - Fri: 9AM - 5PM PST
+                    5. **Offer to connect them** with the DAI team for a more detailed discussion. Email: hello@usedai.co, Location: Birmingham, UK, Working Hours: Mon - Fri: 9AM - 5PM GMT
 
                     ## Important Guidelines
 
