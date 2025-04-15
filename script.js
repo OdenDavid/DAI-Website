@@ -547,7 +547,7 @@ function initializeWebSocket() {
     updateConnectionStatus(reconnectAttempts > 0 ? 'reconnecting' : 'connecting');
     
     // Simply use the secure WebSocket URL - this was working before
-    const wsUrl = `wss://dai-temp.onrender.com/chatComplete`;
+    const wsUrl = `wss://dai-live.onrender.com/chatComplete`;
     
     // Log the WebSocket URL for debugging
     console.log(`Connecting to WebSocket server at: ${wsUrl} (Attempt ${reconnectAttempts + 1}/${maxReconnectAttempts + 1})`);
